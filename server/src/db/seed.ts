@@ -1,6 +1,11 @@
 import bcrypt from 'bcryptjs';
-import { pool } from './pool';
+import { Pool } from 'pg';
 import { env } from '../env';
+
+const seedPool = new Pool({
+  connectionString: env.DIRECT_DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
 type SeedRole = 'inspector' | 'boss';
 type SeedStatus = 'held' | 'approved' | 'rejected';
@@ -223,7 +228,7 @@ const auditEntries: SeedAudit[] = [
 
 async function seed(): Promise<void> {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, env.BCRYPT_ROUNDS);
-  const client = await pool.connect();
+  const client = await seedPool.connect();
   try {
     await client.query('BEGIN');
 
@@ -300,8 +305,8 @@ async function seed(): Promise<void> {
 }
 
 seed()
-  .then(() => pool.end())
+  .then(() => seedPool.end())
   .catch((err) => {
     console.error('[seed] failed', err);
-    pool.end().finally(() => process.exit(1));
+    seedPool.end().finally(() => process.exit(1));
   });
