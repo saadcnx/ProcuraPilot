@@ -1,7 +1,7 @@
 import React from 'react';
 import { Chip } from './Chip';
 import { flagMeta } from '../data/flagMeta';
-import { ComparisonResult, lineTotal } from '../utils/compare';
+import { ComparisonResult } from '../../shared/types';
 import { formatCurrency, formatSignedCurrency } from '../utils/currency';
 import { LineItem } from '../../shared/types';
 
@@ -107,6 +107,10 @@ export function ComparisonTable({ result, taxRate }: ComparisonTableProps) {
       </table>
     </div>);
 
+}
+
+function lineTotal(line?: LineItem): number {
+  return line ? line.qty * line.unitPrice : 0;
 }
 
 function LineCell({ line, compareTo }: {line: LineItem;compareTo?: LineItem;}) {

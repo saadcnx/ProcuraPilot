@@ -1,5 +1,5 @@
 import { flagMeta } from '../data/flagMeta';
-import { ComparisonResult } from './compare';
+import { ComparisonResult } from '../../shared/types';
 
 export function issueSummary(result: ComparisonResult): string {
   if (result.mismatchedItems > 0) {

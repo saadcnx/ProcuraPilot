@@ -1,5 +1,5 @@
+// Shared domain types used by both the client and the server.
 
-```ts
 export type Role = 'inspector' | 'boss';
 
 export interface LineItem {
@@ -67,4 +67,29 @@ export interface DetectionRules {
   panicThreshold: number;
   panicEmail: string;
   apiKey: string;
+}
+
+export interface ComparisonRow {
+  sku: string;
+  description: string;
+  po?: LineItem;
+  billed?: LineItem;
+  diff: number;
+  flags: FlagKind[];
+}
+
+export interface ComparisonResult {
+  rows: ComparisonRow[];
+  flags: Flag[];
+  poSubtotal: number;
+  invoiceSubtotal: number;
+  poTax: number;
+  expectedTax: number;
+  chargedTax: number;
+  poTotal: number;
+  invoiceTotal: number;
+  variance: number;
+  mismatchedItems: number;
+  bankMismatch: boolean;
+  isClean: boolean;
 }

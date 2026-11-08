@@ -1,13 +1,15 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { LogOutIcon } from 'lucide-react';
-import { useProcurement } from '../contexts/ProcurementContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useChecks } from '../lib/queries';
 import { navItems } from '../data/navigation';
 import { BrandMark } from './BrandMark';
 
 export function AppShell() {
-  const { currentUser, logout, invoices } = useProcurement();
-  const heldCount = invoices.filter((i) => i.status === 'held').length;
+  const { user: currentUser, logout } = useAuth();
+  const { data: heldChecks } = useChecks('held');
+  const heldCount = heldChecks?.checks.length ?? 0;
   if (!currentUser) return null;
 
   const initials = currentUser.name.
