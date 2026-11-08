@@ -1,0 +1,15 @@
+{
+  "sid": "s_mw7sq1i6_gcli",
+  "startedAt": 1794140152351,
+  "client": {
+    "os": "Windows",
+    "browser": "Chrome",
+    "locale": "en-US",
+    "tz": "Asia/Karachi"
+  },
+  "fp": "683f4733e9123414",
+  "tier": "pro",
+  "auth": "oauth",
+  "appVer": "5.7.1",
+  "aegisVer": "5.4.9"
+}
