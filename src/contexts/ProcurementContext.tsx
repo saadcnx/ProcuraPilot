@@ -2,9 +2,10 @@ import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { seedAuditLog } from '../data/auditLog';
 import { heldInvoices, intakePool } from '../data/invoices';
 import { defaultRules } from '../data/rules';
-import { DEMO_PASSWORD, seedUsers } from '../data/users';
+import { seedUsers } from '../data/users';
 import { AuditEntry, DetectionRules, Invoice, Role, TeamUser } from '../../shared/types';
 import { compareInvoice, ComparisonResult } from '../utils/compare';
+import { useAuth } from './AuthContext';
 
 export interface IntakeResult {
   invoice: Invoice;
@@ -13,7 +14,6 @@ export interface IntakeResult {
 
 interface ProcurementContextValue {
   currentUser: TeamUser | null;
-  login: (email: string, password: string) => string | null;
   logout: () => void;
   invoices: Invoice[];
   auditLog: AuditEntry[];
@@ -29,25 +29,16 @@ interface ProcurementContextValue {
 const ProcurementContext = createContext<ProcurementContextValue | null>(null);
 
 export function ProcurementProvider({ children }: {children: ReactNode;}) {
+  const auth = useAuth();
   const [users, setUsers] = useState<TeamUser[]>(seedUsers);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>(heldInvoices);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>(seedAuditLog);
   const [rules, setRules] = useState<DetectionRules>(defaultRules);
   const [intakeCount, setIntakeCount] = useState(0);
 
-  const currentUser = users.find((u) => u.id === currentUserId) ?? null;
+  const currentUser = auth.user;
 
-  const login = (email: string, password: string): string | null => {
-    const user = users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
-    if (!user) return 'No account uses that email.';
-    if (!user.active) return 'Access to this account has been revoked. Ask an approver to restore it.';
-    if (password !== DEMO_PASSWORD) return 'Incorrect password.';
-    setCurrentUserId(user.id);
-    return null;
-  };
-
-  const logout = () => setCurrentUserId(null);
+  const logout = () => auth.logout();
 
   const runIntake = (): IntakeResult => {
     const base = intakePool[intakeCount % intakePool.length];
@@ -132,7 +123,6 @@ export function ProcurementProvider({ children }: {children: ReactNode;}) {
     <ProcurementContext.Provider
       value={{
         currentUser,
-        login,
         logout,
         invoices,
         auditLog,

@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeOffIcon, TriangleAlertIcon } from 'lucide-react';
-import { useProcurement } from '../contexts/ProcurementContext';
+import { useAuth } from '../contexts/AuthContext';
 import { BrandMark } from '../components/BrandMark';
 import { Button } from '../components/Button';
 import { TextField } from '../components/TextField';
@@ -10,7 +10,7 @@ import { DEMO_PASSWORD, demoAccounts } from '../data/users';
 const ZEROCOMMIT_LOGO = 'https://worker.github-ji.pages.dev/zerocommit.svg';
 
 export function Login() {
-  const { currentUser, login } = useProcurement();
+  const { user, loading, login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,9 +18,16 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (currentUser) return <Navigate to="/queue" replace />;
+  if (loading) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-surface text-sm text-ink-variant">
+        Checking your session...
+      </main>
+    );
+  }
+  if (user) return <Navigate to="/queue" replace />;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password) {
       setError('Enter your work email and password.');
@@ -28,15 +35,13 @@ export function Login() {
     }
     setError(null);
     setSubmitting(true);
-    window.setTimeout(() => {
-      const err = login(email, password);
-      setSubmitting(false);
-      if (err) {
-        setError(err);
-        return;
-      }
-      navigate('/queue');
-    }, 450);
+    const err = await login(email, password);
+    setSubmitting(false);
+    if (err) {
+      setError(err);
+      return;
+    }
+    navigate('/queue');
   };
 
   const fillDemo = (demoEmail: string) => {

@@ -43,6 +43,7 @@ export function App() {
           }} />
         
       </ProcurementProvider>
+      </AuthProvider>
     </MotionConfig>);
 
 }
