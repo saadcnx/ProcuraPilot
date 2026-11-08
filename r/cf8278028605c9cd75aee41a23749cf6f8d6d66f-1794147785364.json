@@ -1,0 +1,161 @@
+{
+  "v": 2,
+  "id": "zc_mw7x9ncu_ijef",
+  "sid": "s_mw7x9ncs_ixr6",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794147785364,
+  "sha": "cf8278028605c9cd75aee41a23749cf6f8d6d66f",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 17 file(s) across 2 prompt turn(s)",
+  "msgHash": "88dc882977fcad21",
+  "files": [
+    [
+      "package.json",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "shared/types.ts",
+      "m",
+      "ai",
+      2,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/queries.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "src/components/ErrorBoundary.tsx",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/App.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/AppShell.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/ComparisonTable.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/utils/issueSummary.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/IntakePanel.tsx",
+      "m",
+      "ai",
+      2,
+      1
+    ],
+    [
+      "src/components/DecisionPanel.tsx",
+      "m",
+      "ai",
+      2,
+      1
+    ],
+    [
+      "src/components/AddUserDialog.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Queue.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "m",
+      "ai",
+      2,
+      1
+    ],
+    [
+      "src/pages/AuditVault.tsx",
+      "m",
+      "ai",
+      2,
+      1
+    ],
+    [
+      "src/pages/People.tsx",
+      "m",
+      "ai",
+      2,
+      1
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 17,
+    "add": 2,
+    "mod": 15,
+    "del": 0,
+    "src": {
+      "ai": 17
+    }
+  },
+  "warn": {
+    "quarantine": 5,
+    "halluc": 1,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 9494,
+  "hash": "89944941af9bd585"
+}
