@@ -21,6 +21,7 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   PORT: Number(process.env.PORT ?? 3001),
   DATABASE_URL: required('DATABASE_URL'),
+  DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL ?? required('DATABASE_URL'),
   JWT_SECRET: requireJwtSecret(),
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '8h',
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
