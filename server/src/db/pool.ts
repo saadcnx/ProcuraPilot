@@ -5,7 +5,8 @@ export const pool = new Pool({
   connectionString: env.DATABASE_URL,
   max: 10,
   idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 5_000
+  connectionTimeoutMillis: 5_000,
+  ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
 });
 
 pool.on('error', (err) => {
