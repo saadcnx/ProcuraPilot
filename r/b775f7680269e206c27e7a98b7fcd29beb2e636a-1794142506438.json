@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mw7u4hxx_rmbi",
+  "sid": "s_mw7sq1i6_gcli",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794142506438,
+  "sha": "b775f7680269e206c27e7a98b7fcd29beb2e636a",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "server/src/db/migrate.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ai": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 8,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5406,
+  "hash": "9208802612074938"
+}
