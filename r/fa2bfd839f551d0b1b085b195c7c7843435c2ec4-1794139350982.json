@@ -1,0 +1,371 @@
+{
+  "v": 2,
+  "id": "zc_mw7s8vs4_xd1o",
+  "sid": "s_mw7s8vrv_548v",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794139350982,
+  "sha": "fa2bfd839f551d0b1b085b195c7c7843435c2ec4",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 47 file(s) across 1 prompt turn(s)",
+  "msgHash": "7486be3f77fcad21",
+  "files": [
+    [
+      "index.html",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "vite.config.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "tsconfig.json",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "tsconfig.node.json",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      ".gitignore",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      ".eslintrc.cjs",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "README.md",
+      "m",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "postcss.config.js",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "package.json",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/index.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/App.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/package.json",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/index.css",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "tailwind.config.js",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/docs/Screen-ProcuraPilot.md",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/docs/anti-slop.md",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/types/procurement.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/utils/currency.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/utils/compare.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/utils/csv.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/data/invoices.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/data/auditLog.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/data/users.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/data/rules.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/data/navigation.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/data/flagMeta.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/contexts/ProcurementContext.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/Button.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/TextField.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/Switch.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/Chip.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/Dialog.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/BrandMark.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/RequireAuth.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/AppShell.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/utils/issueSummary.ts",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/pages/Login.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/FileDropSlot.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/IntakePanel.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/pages/Queue.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/ComparisonTable.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/DecisionPanel.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/pages/AuditVault.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/components/AddUserDialog.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/pages/People.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "a",
+      "zip",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 47,
+    "add": 46,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "zip": 47
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 4,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 21049,
+  "hash": "17556f7e9a1c3c0e"
+}
