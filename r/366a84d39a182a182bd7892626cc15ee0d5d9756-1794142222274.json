@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mw7tyep3_z2bo",
+  "sid": "s_mw7sq1i6_gcli",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794142222274,
+  "sha": "366a84d39a182a182bd7892626cc15ee0d5d9756",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "server/src/db/pool.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ai": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 7,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5282,
+  "hash": "6c296cd392a07712"
+}
