@@ -1,0 +1,245 @@
+{
+  "v": 2,
+  "id": "zc_mw7sucf7_yxnf",
+  "sid": "s_mw7sq1i6_gcli",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794140353081,
+  "sha": "7df92f202c2be0419e9285bf5737f995b8a019fe",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 29 file(s) across 2 prompt turn(s)",
+  "msgHash": "5632fe246ec87981",
+  "files": [
+    [
+      "src/contexts/ProcurementContext.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/components/AddUserDialog.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/components/ComparisonTable.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/components/DecisionPanel.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/pages/People.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/pages/AuditVault.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/utils/compare.ts",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/data/auditLog.ts",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/data/flagMeta.ts",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/data/invoices.ts",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/data/rules.ts",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "src/data/users.ts",
+      "m",
+      "ai",
+      1,
+      8
+    ],
+    [
+      "server/package.json",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/tsconfig.json",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/.env.example",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/.gitignore",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/.dockerignore",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/captain-definition",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/Dockerfile",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/env.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/db/pool.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/db/migrate.ts",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/seed.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/index.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/migrations/001_initial.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/migrations/002_audit_immutable.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "shared/types.ts",
+      "m",
+      "ai",
+      2,
+      0
+    ],
+    [
+      "tsconfig.json",
+      "m",
+      "ai",
+      2,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 29,
+    "add": 14,
+    "mod": 15,
+    "del": 0,
+    "src": {
+      "ai": 29
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 4,
+    "secret": 0,
+    "runtime": 13,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 2,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 15694,
+  "hash": "9ffe51ea3bfa7d12"
+}
