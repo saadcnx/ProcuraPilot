@@ -1,0 +1,154 @@
+{
+  "v": 2,
+  "id": "zc_mw7szgp5_qkjo",
+  "sid": "s_mw7sq1i6_gcli",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794140591883,
+  "sha": "99f7b6b279df2e7e24733d4442371cb22842c038",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 16 file(s) across 2 prompt turn(s)",
+  "msgHash": "422599d6e906f890",
+  "files": [
+    [
+      "server/package.json",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/env.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/jwt.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/middleware/auth.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/middleware/rateLimit.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/middleware/errorHandler.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/routes/auth.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/index.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/.env.example",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      2,
+      0
+    ],
+    [
+      "src/contexts/AuthContext.tsx",
+      "m",
+      "ai",
+      2,
+      0
+    ],
+    [
+      "src/App.tsx",
+      "m",
+      "ai",
+      2,
+      0
+    ],
+    [
+      "src/contexts/ProcurementContext.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Login.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/RequireAuth.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/storage.ts",
+      "a",
+      "ai",
+      2,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 16,
+    "add": 6,
+    "mod": 10,
+    "del": 0,
+    "src": {
+      "ai": 16
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 5,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 4,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 9483,
+  "hash": "c24befaa75fcc571"
+}
