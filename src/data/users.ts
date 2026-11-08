@@ -1,4 +1,4 @@
-import { TeamUser } from '../types/procurement';
+import { TeamUser } from '../../shared/types';
 
 export const DEMO_PASSWORD = 'pilot123';
 

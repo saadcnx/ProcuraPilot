@@ -5,7 +5,7 @@ import { useProcurement } from '../contexts/ProcurementContext';
 import { Button } from '../components/Button';
 import { Switch } from '../components/Switch';
 import { TextField } from '../components/TextField';
-import { DetectionRules } from '../types/procurement';
+import { DetectionRules } from '../../shared/types';
 import { compareInvoice } from '../utils/compare';
 
 interface RulesDraft {

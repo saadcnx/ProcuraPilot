@@ -1,3 +1,5 @@
+
+```ts
 export type Role = 'inspector' | 'boss';
 
 export interface LineItem {

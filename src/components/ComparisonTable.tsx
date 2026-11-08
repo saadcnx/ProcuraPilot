@@ -3,7 +3,7 @@ import { Chip } from './Chip';
 import { flagMeta } from '../data/flagMeta';
 import { ComparisonResult, lineTotal } from '../utils/compare';
 import { formatCurrency, formatSignedCurrency } from '../utils/currency';
-import { LineItem } from '../types/procurement';
+import { LineItem } from '../../shared/types';
 
 interface ComparisonTableProps {
   result: ComparisonResult;

@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useProcurement } from '../contexts/ProcurementContext';
 import { Button } from '../components/Button';
 import { Chip } from '../components/Chip';
-import { AuditEntry, Decision } from '../types/procurement';
+import { AuditEntry, Decision } from '../../shared/types';
 import { formatSignedCurrency } from '../utils/currency';
 import { downloadCsv, toCsv } from '../utils/csv';
 

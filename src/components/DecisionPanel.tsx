@@ -4,7 +4,7 @@ import { EyeIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProcurement } from '../contexts/ProcurementContext';
 import { flagMeta } from '../data/flagMeta';
-import { Invoice } from '../types/procurement';
+import { Invoice } from '../../shared/types';
 import { ComparisonResult } from '../utils/compare';
 import { formatCurrency, formatSignedCurrency } from '../utils/currency';
 import { Button } from './Button';

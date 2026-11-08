@@ -3,7 +3,7 @@ import { seedAuditLog } from '../data/auditLog';
 import { heldInvoices, intakePool } from '../data/invoices';
 import { defaultRules } from '../data/rules';
 import { DEMO_PASSWORD, seedUsers } from '../data/users';
-import { AuditEntry, DetectionRules, Invoice, Role, TeamUser } from '../types/procurement';
+import { AuditEntry, DetectionRules, Invoice, Role, TeamUser } from '../../shared/types';
 import { compareInvoice, ComparisonResult } from '../utils/compare';
 
 export interface IntakeResult {

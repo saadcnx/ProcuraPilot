@@ -1,5 +1,5 @@
 import { GhostIcon, LandmarkIcon, LucideIcon, PackageIcon, ReceiptIcon, TagIcon } from 'lucide-react';
-import { FlagKind } from '../types/procurement';
+import { FlagKind } from '../../shared/types';
 
 export const flagMeta: Record<FlagKind, {label: string;icon: LucideIcon;}> = {
   price: { label: 'Price raised', icon: TagIcon },

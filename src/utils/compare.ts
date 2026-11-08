@@ -1,4 +1,4 @@
-import { DetectionRules, Flag, FlagKind, Invoice, LineItem } from '../types/procurement';
+import { DetectionRules, Flag, FlagKind, Invoice, LineItem } from '../../shared/types';
 import { formatCurrency } from './currency';
 
 export interface ComparisonRow {

@@ -1,4 +1,4 @@
-import { DetectionRules } from '../types/procurement';
+import { DetectionRules } from '../../shared/types';
 
 export const defaultRules: DetectionRules = {
   toleranceAmount: 5,

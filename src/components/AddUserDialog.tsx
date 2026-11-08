@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useProcurement } from '../contexts/ProcurementContext';
-import { Role } from '../types/procurement';
+import { Role } from '../../shared/types';
 import { Button } from './Button';
 import { Dialog } from './Dialog';
 import { TextField } from './TextField';

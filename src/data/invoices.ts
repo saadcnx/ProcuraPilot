@@ -1,4 +1,4 @@
-import { Invoice } from '../types/procurement';
+import { Invoice } from '../../shared/types';
 
 export const heldInvoices: Invoice[] = [
 {

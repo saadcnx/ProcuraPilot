@@ -1,4 +1,4 @@
-import { AuditEntry } from '../types/procurement';
+import { AuditEntry } from '../../shared/types';
 
 export const seedAuditLog: AuditEntry[] = [
 {

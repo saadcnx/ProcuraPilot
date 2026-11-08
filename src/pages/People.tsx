@@ -6,7 +6,7 @@ import { AddUserDialog } from '../components/AddUserDialog';
 import { Button } from '../components/Button';
 import { Chip } from '../components/Chip';
 import { Dialog } from '../components/Dialog';
-import { TeamUser } from '../types/procurement';
+import { TeamUser } from '../../shared/types';
 
 const HIGH_OVERRIDES = 5;
 
