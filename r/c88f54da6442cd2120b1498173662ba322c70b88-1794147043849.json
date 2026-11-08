@@ -1,0 +1,119 @@
+{
+  "v": 2,
+  "id": "zc_mw7wtr5n_qhuy",
+  "sid": "s_mw7wtr5d_pt4z",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794147043849,
+  "sha": "c88f54da6442cd2120b1498173662ba322c70b88",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 11 file(s) across 1 prompt turn(s)",
+  "msgHash": "a6f6ea4077fcad21",
+  "files": [
+    [
+      "server/package.json",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/engine/types.ts",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/engine/compare.ts",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/pdf.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/lib/upload.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/db/repo.ts",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/routes/audit.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/routes/users.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/routes/rules.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ],
+    [
+      "server/src/index.ts",
+      "m",
+      "ai",
+      1,
+      1
+    ]
+  ],
+  "sum": {
+    "files": 11,
+    "add": 9,
+    "mod": 2,
+    "del": 0,
+    "src": {
+      "ai": 11
+    }
+  },
+  "warn": {
+    "quarantine": 1,
+    "halluc": 6,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 2,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 8837,
+  "hash": "0e04642c96934358"
+}
