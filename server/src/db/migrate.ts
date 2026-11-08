@@ -1,9 +1,15 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { pool } from './pool';
+import { Pool } from 'pg';
+import { env } from '../env';
+
+const migrationPool = new Pool({
+  connectionString: env.DIRECT_DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
 async function ensureMigrationsTable(): Promise<void> {
-  await pool.query(`
+  await migrationPool.query(`
     CREATE TABLE IF NOT EXISTS schema_migrations (
       filename TEXT PRIMARY KEY,
       applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -12,7 +18,7 @@ async function ensureMigrationsTable(): Promise<void> {
 }
 
 async function appliedMigrations(): Promise<Set<string>> {
-  const res = await pool.query<{ filename: string }>('SELECT filename FROM schema_migrations');
+  const res = await migrationPool.query<{ filename: string }>('SELECT filename FROM schema_migrations');
   return new Set(res.rows.map((r) => r.filename));
 }
 
@@ -33,7 +39,7 @@ async function migrate(): Promise<void> {
     }
     const sql = await fs.readFile(path.join(dir, file), 'utf8');
     console.log(`[migrate] apply ${file}`);
-    const client = await pool.connect();
+    const client = await migrationPool.connect();
     try {
       await client.query('BEGIN');
       await client.query(sql);
@@ -50,8 +56,8 @@ async function migrate(): Promise<void> {
 }
 
 migrate()
-  .then(() => pool.end())
+  .then(() => migrationPool.end())
   .catch((err) => {
     console.error('[migrate] failed', err);
-    pool.end().finally(() => process.exit(1));
+    migrationPool.end().finally(() => process.exit(1));
   });
