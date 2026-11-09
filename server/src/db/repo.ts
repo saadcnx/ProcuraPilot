@@ -1,5 +1,6 @@
 import { pool } from './pool';
 import { DetectionRules, Invoice, LineItem } from '../engine/types';
+import { encryptSecret, decryptSecret } from '../lib/secretBox';
 
 interface CheckRow {
   id: string;
@@ -133,13 +134,13 @@ export async function loadRules(): Promise<DetectionRules> {
     bankCheck: r.bank_check,
     panicThreshold: Number(r.panic_threshold),
     panicEmail: r.panic_email,
-    apiKey: r.api_key_encrypted
+    apiKey: decryptSecret(r.api_key_encrypted)
   };
 }
 
 export async function saveRules(rules: DetectionRules): Promise<void> {
   await pool.query(
     `UPDATE rules SET tolerance_amount=$1, tolerance_percent=$2, bank_check=$3, panic_threshold=$4, panic_email=$5, api_key_encrypted=$6, updated_at=NOW() WHERE id=1`,
-    [rules.toleranceAmount, rules.tolerancePercent, rules.bankCheck, rules.panicThreshold, rules.panicEmail, rules.apiKey]
+    [rules.toleranceAmount, rules.tolerancePercent, rules.bankCheck, rules.panicThreshold, rules.panicEmail, encryptSecret(rules.apiKey ?? '')]
   );
 }

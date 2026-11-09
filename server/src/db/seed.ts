@@ -227,6 +227,9 @@ const auditEntries: SeedAudit[] = [
 ];
 
 async function seed(): Promise<void> {
+  if (env.NODE_ENV === 'production') {
+    throw new Error('[seed] Refusing to run seed in production');
+  }
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, env.BCRYPT_ROUNDS);
   const client = await seedPool.connect();
   try {

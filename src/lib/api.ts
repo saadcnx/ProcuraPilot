@@ -79,7 +79,7 @@ export const api = {
   getUsers: () => apiFetch<{ users: TeamUser[] }>('/api/users'),
 
   inviteUser: (input: { name: string; email: string; role: 'inspector' | 'boss' }) =>
-    apiFetch<{ user: TeamUser }>('/api/users', {
+    apiFetch<{ user: TeamUser; tempPassword: string }>('/api/users', {
       method: 'POST',
       body: JSON.stringify(input)
     }),

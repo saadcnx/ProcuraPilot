@@ -44,7 +44,7 @@ export function DetectionRulesPage() {
     );
   }
 
-  const errors = validate(draft);
+  const errors = validate(draft, Boolean(rules.hasKey));
   const parsed = Object.keys(errors).length === 0 ? fromDraft(draft) : null;
   const dirty = JSON.stringify(draft) !== JSON.stringify(toDraft(rules));
 
@@ -233,7 +233,7 @@ function toDraft(rules: DetectionRules): RulesDraft {
     bankCheck: rules.bankCheck,
     panicThreshold: String(rules.panicThreshold),
     panicEmail: rules.panicEmail,
-    apiKey: rules.apiKey
+    apiKey: rules.apiKey ?? ''
   };
 }
 
@@ -248,7 +248,7 @@ function fromDraft(draft: RulesDraft): DetectionRules {
   };
 }
 
-function validate(draft: RulesDraft): DraftErrors {
+function validate(draft: RulesDraft, hasStoredKey: boolean): DraftErrors {
   const errors: DraftErrors = {};
   const isNonNegative = (v: string) => v.trim() !== '' && !Number.isNaN(Number(v)) && Number(v) >= 0;
   if (!isNonNegative(draft.toleranceAmount)) errors.toleranceAmount = 'Enter 0 or more.';
@@ -258,6 +258,6 @@ function validate(draft: RulesDraft): DraftErrors {
   if (!isNonNegative(draft.panicThreshold)) errors.panicThreshold = 'Enter 0 or more.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.panicEmail.trim()))
     errors.panicEmail = 'Enter a valid email.';
-  if (!draft.apiKey.trim()) errors.apiKey = 'A key is required to read documents.';
+  if (!draft.apiKey.trim() && !hasStoredKey) errors.apiKey = 'A key is required to read documents.';
   return errors;
 }

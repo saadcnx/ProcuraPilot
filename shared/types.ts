@@ -66,7 +66,8 @@ export interface DetectionRules {
   bankCheck: boolean;
   panicThreshold: number;
   panicEmail: string;
-  apiKey: string;
+  apiKey?: string;
+  hasKey?: boolean;
 }
 
 export interface ComparisonRow {

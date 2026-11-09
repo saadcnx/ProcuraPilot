@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { randomUUID } from 'crypto';
+import { randomBytes, randomUUID } from 'crypto';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { pool } from '../db/pool';
 import { env } from '../env';
@@ -46,8 +46,9 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
     res.status(409).json({ error: 'email_in_use' });
     return;
   }
-  // Temporary password — user should reset via future flow
-  const passwordHash = await bcrypt.hash('pilot123', env.BCRYPT_ROUNDS);
+  // One-time temporary password; admin must share it out-of-band.
+  const tempPassword = randomBytes(24).toString('base64url');
+  const passwordHash = await bcrypt.hash(tempPassword, env.BCRYPT_ROUNDS);
   const id = `u-${randomUUID().slice(0, 8)}`;
   const { rows } = await pool.query<UserRow>(
     `INSERT INTO users (id, name, email, password_hash, role, active, force_approvals)
@@ -55,7 +56,7 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
      RETURNING id, name, email, role, active, force_approvals`,
     [id, parsed.data.name.trim(), email, passwordHash, parsed.data.role]
   );
-  res.status(201).json({ user: mapUser(rows[0]) });
+  res.status(201).json({ user: mapUser(rows[0]), tempPassword });
 });
 
 const patchSchema = z.object({ active: z.boolean() });

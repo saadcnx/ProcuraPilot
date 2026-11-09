@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { BrandMark } from '../components/BrandMark';
 import { Button } from '../components/Button';
 import { TextField } from '../components/TextField';
-import { DEMO_PASSWORD, demoAccounts } from '../data/users';
 
 const ZEROCOMMIT_LOGO = 'https://worker.github-ji.pages.dev/zerocommit.svg';
 
@@ -44,11 +43,6 @@ export function Login() {
     navigate('/queue');
   };
 
-  const fillDemo = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword(DEMO_PASSWORD);
-    setError(null);
-  };
 
   return (
     <main className="grid min-h-screen w-full bg-surface lg:grid-cols-[minmax(0,1fr)_minmax(480px,560px)]">
@@ -110,23 +104,6 @@ export function Login() {
             </Button>
           </form>
 
-          <div className="mt-10 border-t border-outline-variant pt-6">
-            <p className="text-sm text-ink-variant">
-              Demo accounts — password <span className="font-medium text-ink">{DEMO_PASSWORD}</span>
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {demoAccounts.map((account) =>
-              <button
-                key={account.email}
-                type="button"
-                onClick={() => fillDemo(account.email)}
-                className="h-8 rounded-lg border border-outline-variant px-3 text-sm font-medium text-ink-variant transition-colors duration-150 ease-out hover:bg-ink/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                
-                  {account.label}
-                </button>
-              )}
-            </div>
-          </div>
         </div>
       </section>
     </main>);

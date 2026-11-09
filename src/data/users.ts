@@ -1,6 +1,5 @@
 import { TeamUser } from '../../shared/types';
 
-export const DEMO_PASSWORD = 'pilot123';
 
 export const seedUsers: TeamUser[] = [
 { id: 'u1', name: 'Ayesha Khan', email: 'ayesha.khan@procurapilot.com', role: 'boss', active: true, forceApprovals: 3 },
