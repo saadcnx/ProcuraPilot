@@ -86,7 +86,8 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
       bankAccount: invParsed.bankAccount,
       bankOnFile: invParsed.bankAccount,
       status: 'held',
-      extractionUncertain: invParsed.confidence === 'low'
+      extractionUncertain: invParsed.confidence === 'low',
+      department: 'Unassigned'
     };
     const result = compareInvoice(invoice, rules);
     if (result.isClean) invoice.status = 'approved';

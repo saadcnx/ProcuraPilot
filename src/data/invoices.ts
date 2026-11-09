@@ -22,7 +22,8 @@ export const heldInvoices: Invoice[] = [
   invoiceTaxCharged: 366.8,
   bankAccount: '•••• 4410',
   bankOnFile: '•••• 4410',
-  status: 'held'
+  status: 'held',
+  department: 'Operations'
 },
 {
   id: 'coastal-freight-1189',
@@ -42,7 +43,8 @@ export const heldInvoices: Invoice[] = [
   invoiceTaxCharged: 0,
   bankAccount: '•••• 8812',
   bankOnFile: '•••• 8812',
-  status: 'held'
+  status: 'held',
+  department: 'Logistics'
 },
 {
   id: 'meridian-lab-30471',
@@ -62,7 +64,8 @@ export const heldInvoices: Invoice[] = [
   invoiceTaxCharged: 0,
   bankAccount: '•••• 7731',
   bankOnFile: '•••• 2094',
-  status: 'held'
+  status: 'held',
+  department: 'R&D'
 },
 {
   id: 'northwind-5520',
@@ -82,7 +85,8 @@ export const heldInvoices: Invoice[] = [
   invoiceTaxCharged: 412.76,
   bankAccount: '•••• 0937',
   bankOnFile: '•••• 0937',
-  status: 'held'
+  status: 'held',
+  department: 'Facilities'
 },
 {
   id: 'greenleaf-0402',
@@ -102,7 +106,8 @@ export const heldInvoices: Invoice[] = [
   invoiceTaxCharged: 111,
   bankAccount: '•••• 5526',
   bankOnFile: '•••• 5526',
-  status: 'held'
+  status: 'held',
+  department: 'Packaging'
 }];
 
 
@@ -125,7 +130,8 @@ export const intakePool: Invoice[] = [
   invoiceTaxCharged: 0,
   bankAccount: '•••• 3318',
   bankOnFile: '•••• 3318',
-  status: 'held'
+  status: 'held',
+  department: 'Electrical'
 },
 {
   id: 'brightway-4471',
@@ -145,5 +151,6 @@ export const intakePool: Invoice[] = [
   invoiceTaxCharged: 0,
   bankAccount: '•••• 6120',
   bankOnFile: '•••• 6120',
-  status: 'held'
+  status: 'held',
+  department: 'Facilities'
 }];

@@ -41,6 +41,7 @@ interface SeedInvoice {
   bankAccount: string;
   bankOnFile: string;
   status: SeedStatus;
+  department: string;
 }
 
 interface SeedAudit {
@@ -89,7 +90,8 @@ const invoices: SeedInvoice[] = [
     invoiceTaxCharged: 366.8,
     bankAccount: '•••• 4410',
     bankOnFile: '•••• 4410',
-    status: 'held'
+    status: 'held',
+    department: 'Operations'
   },
   {
     id: 'coastal-freight-1189',
@@ -109,7 +111,8 @@ const invoices: SeedInvoice[] = [
     invoiceTaxCharged: 0,
     bankAccount: '•••• 8812',
     bankOnFile: '•••• 8812',
-    status: 'held'
+    status: 'held',
+    department: 'Logistics'
   },
   {
     id: 'meridian-lab-30471',
@@ -129,7 +132,8 @@ const invoices: SeedInvoice[] = [
     invoiceTaxCharged: 0,
     bankAccount: '•••• 7731',
     bankOnFile: '•••• 2094',
-    status: 'held'
+    status: 'held',
+    department: 'R&D'
   },
   {
     id: 'northwind-5520',
@@ -149,7 +153,8 @@ const invoices: SeedInvoice[] = [
     invoiceTaxCharged: 412.76,
     bankAccount: '•••• 0937',
     bankOnFile: '•••• 0937',
-    status: 'held'
+    status: 'held',
+    department: 'Facilities'
   },
   {
     id: 'greenleaf-0402',
@@ -169,7 +174,8 @@ const invoices: SeedInvoice[] = [
     invoiceTaxCharged: 111,
     bankAccount: '•••• 5526',
     bankOnFile: '•••• 5526',
-    status: 'held'
+    status: 'held',
+    department: 'Packaging'
   }
 ];
 
@@ -252,8 +258,8 @@ async function seed(): Promise<void> {
 
     for (const inv of invoices) {
       await client.query(
-        `INSERT INTO checks (id, vendor, po_number, invoice_number, received_at, tax_rate, invoice_tax_charged, bank_account, bank_on_file, status)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+        `INSERT INTO checks (id, vendor, po_number, invoice_number, received_at, tax_rate, invoice_tax_charged, bank_account, bank_on_file, status, department)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
          ON CONFLICT (id) DO UPDATE SET
            vendor = EXCLUDED.vendor,
            po_number = EXCLUDED.po_number,
@@ -263,8 +269,9 @@ async function seed(): Promise<void> {
            invoice_tax_charged = EXCLUDED.invoice_tax_charged,
            bank_account = EXCLUDED.bank_account,
            bank_on_file = EXCLUDED.bank_on_file,
-           status = EXCLUDED.status`,
-        [inv.id, inv.vendor, inv.poNumber, inv.invoiceNumber, inv.receivedAt, inv.taxRate, inv.invoiceTaxCharged, inv.bankAccount, inv.bankOnFile, inv.status]
+           status = EXCLUDED.status,
+           department = EXCLUDED.department`,
+        [inv.id, inv.vendor, inv.poNumber, inv.invoiceNumber, inv.receivedAt, inv.taxRate, inv.invoiceTaxCharged, inv.bankAccount, inv.bankOnFile, inv.status, inv.department]
       );
 
       await client.query('DELETE FROM line_items WHERE check_id = $1', [inv.id]);

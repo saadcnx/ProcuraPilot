@@ -112,7 +112,7 @@ export function DecisionPanel({ invoice, result }: DecisionPanelProps) {
         {isApprover ? (
           <>
             <p className="mt-1 text-sm text-ink-variant">
-              Signed as {user?.name}. Decisions can't be edited afterwards.
+              Signed as {user?.name} for <span className="font-medium text-ink">{invoice.department}</span>. Decisions can't be edited afterwards.
             </p>
             <div className="mt-5">
               <TextField

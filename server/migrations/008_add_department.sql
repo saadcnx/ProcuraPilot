@@ -1,0 +1,1 @@
+ALTER TABLE checks ADD COLUMN IF NOT EXISTS department TEXT NOT NULL DEFAULT 'Unassigned';

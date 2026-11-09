@@ -25,6 +25,7 @@ export interface Invoice {
   bankOnFile: string;
   status: InvoiceStatus;
   extractionUncertain?: boolean;
+  department: string;
 }
 
 export type FlagKind = 'price' | 'quantity' | 'ghost' | 'tax' | 'bank';

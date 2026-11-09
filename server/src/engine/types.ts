@@ -5,7 +5,7 @@ export interface Invoice {
   id: string; vendor: string; poNumber: string; invoiceNumber: string;
   receivedAt: string; poLines: LineItem[]; invoiceLines: LineItem[];
   taxRate: number; invoiceTaxCharged: number; bankAccount: string; bankOnFile: string;
-  status: InvoiceStatus; extractionUncertain?: boolean;
+  status: InvoiceStatus; extractionUncertain?: boolean; department: string;
 }
 export type FlagKind = 'price' | 'quantity' | 'ghost' | 'tax' | 'bank';
 export interface Flag { kind: FlagKind; sku?: string; message: string; amount: number; }

@@ -78,6 +78,7 @@ export function Queue() {
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="truncate font-medium text-ink">{invoice.vendor}</span>
+                          <Chip tone="neutral">{invoice.department}</Chip>
                           {frozen && (
                             <Chip tone="rose" icon={LockIcon}>
                               Frozen
