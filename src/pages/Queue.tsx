@@ -33,7 +33,7 @@ export function Queue() {
 
       {error && (
         <div className="mb-4 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container">
-          Could not load the queue. Refresh the page.
+          Could not load the queue. {error instanceof Error ? error.message : 'Refresh the page.'}
         </div>
       )}
 

@@ -67,7 +67,7 @@ function rowToInvoice(c: CheckRow, items: { po: LineItem[]; invoice: LineItem[] 
     vendor: c.vendor,
     poNumber: c.po_number,
     invoiceNumber: c.invoice_number,
-    receivedAt: c.received_at.toISOString(),
+    receivedAt: c.received_at ? c.received_at.toISOString() : new Date().toISOString(),
     taxRate: Number(c.tax_rate),
     invoiceTaxCharged: Number(c.invoice_tax_charged),
     bankAccount: c.bank_account,
