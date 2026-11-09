@@ -54,7 +54,7 @@ ${text}`;
   });
 
   if (!res.ok) throw new Error(`API error: ${res.status}`);
-  const data = await res.json();
+  const data = (await res.json()) as any;
   const parsed = JSON.parse(data.choices[0].message.content);
 
   return {
