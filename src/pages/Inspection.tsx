@@ -1,5 +1,3 @@
-
-```tsx
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
