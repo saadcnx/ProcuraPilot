@@ -6,6 +6,10 @@ import pinoHttp from 'pino-http';
 import { env } from './env';
 import { pool, pingDb } from './db/pool';
 import authRouter from './routes/auth';
+import checksRouter from './routes/checks';
+import rulesRouter from './routes/rules';
+import auditRouter from './routes/audit';
+import usersRouter from './routes/users';
 import { apiLimiter } from './middleware/rateLimit';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
 
