@@ -43,8 +43,10 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
   const trimmedKey = (apiKey ?? '').trim();
   const hasKey = trimmedKey.length > 10;
 
-  if (!looksScanned(text)) {
-    const regexDoc = parseDocumentText(text, kind);
+  const textDoc = parseDocumentText(text, kind);
+  const textHasLines = textDoc.lines.length > 0;
+
+  if (!looksScanned(text) && textHasLines) {
     if (hasKey) {
       try {
         const apiDoc = await parseWithApi(text, kind, trimmedKey);
@@ -53,7 +55,7 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
         console.error('[pdf] API text parse failed, using regex:', apiError);
       }
     }
-    return regexDoc;
+    return textDoc;
   }
 
   if (!hasKey) {
@@ -65,6 +67,7 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
 
   const visionDoc = await parseScannedPdf(buffer, kind, trimmedKey);
   if (!hasUsableContent(visionDoc)) {
+    if (textHasLines) return textDoc;
     throw new ParseError('vision_extraction_failed', 'Could not extract line items from this scanned PDF.');
   }
   return visionDoc;
@@ -73,7 +76,10 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
 async function parseScannedPdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
   let toImages: (buf: Buffer, opts?: { scale?: number }) => Promise<AsyncIterable<Buffer>>;
   try {
-    const mod = await import('pdf-to-img');
+    const dynamicImport = new Function('specifier', 'return import(specifier)') as (
+      specifier: string
+    ) => Promise<any>;
+    const mod = await dynamicImport('pdf-to-img');
     toImages = mod.pdf as unknown as typeof toImages;
   } catch {
     throw new ParseError(
