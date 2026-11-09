@@ -11,21 +11,195 @@ export interface ParsedDoc {
   rawText: string;
 }
 
+export class ParseError extends Error {
+  code: string;
+  constructor(code: string, message?: string) {
+    super(message ?? code);
+    this.code = code;
+    this.name = 'ParseError';
+  }
+}
+
+const MIN_TEXT_LENGTH = 100;
+const MAX_VISION_PAGES = 5;
+
+function hasUsableContent(doc: ParsedDoc): boolean {
+  return doc.lines.length > 0;
+}
+
+function looksScanned(text: string): boolean {
+  return text.trim().length < MIN_TEXT_LENGTH;
+}
+
 export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: string): Promise<ParsedDoc> {
+  let data: { text: string };
   try {
-    const data = await pdf(buffer);
-    if (apiKey && apiKey.length > 10) {
+    data = await pdf(buffer);
+  } catch (err) {
+    throw new ParseError('invalid_pdf_format', err instanceof Error ? err.message : 'PDF parse error');
+  }
+
+  const text = data.text ?? '';
+  const trimmedKey = (apiKey ?? '').trim();
+  const hasKey = trimmedKey.length > 10;
+
+  if (!looksScanned(text)) {
+    const regexDoc = parseDocumentText(text, kind);
+    if (hasKey) {
       try {
-        return await parseWithApi(data.text, kind, apiKey);
+        const apiDoc = await parseWithApi(text, kind, trimmedKey);
+        if (hasUsableContent(apiDoc)) return apiDoc;
       } catch (apiError) {
-        console.error('API parse failed, falling back to regex:', apiError);
+        console.error('[pdf] API text parse failed, using regex:', apiError);
       }
     }
-    return parseDocumentText(data.text, kind);
-  } catch (error) {
-    console.error('PDF parse error:', error);
-    return { vendor: '', referenceNumber: '', taxRate: 0, chargedTax: null, bankAccount: '', lines: [], rawText: '' };
+    return regexDoc;
   }
+
+  if (!hasKey) {
+    throw new ParseError(
+      'api_key_required_for_scanned_pdf',
+      'PDF has no readable text layer. Add an AI key in Detection Rules to read scanned documents.'
+    );
+  }
+
+  const visionDoc = await parseScannedPdf(buffer, kind, trimmedKey);
+  if (!hasUsableContent(visionDoc)) {
+    throw new ParseError('vision_extraction_failed', 'Could not extract line items from this scanned PDF.');
+  }
+  return visionDoc;
+}
+
+async function parseScannedPdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
+  let toImages: (buf: Buffer, opts?: { scale?: number }) => Promise<AsyncIterable<Buffer>>;
+  try {
+    const mod = await import('pdf-to-img');
+    toImages = mod.pdf as unknown as typeof toImages;
+  } catch {
+    throw new ParseError(
+      'vision_dependency_missing',
+      'pdf-to-img is not installed. Run `npm install` in server/.'
+    );
+  }
+
+  const imageBuffers: Buffer[] = [];
+  try {
+    const doc = await toImages(buffer, { scale: 2 });
+    let rendered = 0;
+    for await (const page of doc) {
+      if (rendered >= MAX_VISION_PAGES) break;
+      imageBuffers.push(page as Buffer);
+      rendered++;
+    }
+  } catch (err) {
+    throw new ParseError(
+      'vision_extraction_failed',
+      err instanceof Error ? err.message : 'Could not render PDF pages.'
+    );
+  }
+
+  if (imageBuffers.length === 0) {
+    throw new ParseError('vision_extraction_failed', 'No pages could be rendered from PDF.');
+  }
+
+  return parseWithVision(imageBuffers, kind, apiKey);
+}
+
+async function parseWithVision(images: Buffer[], kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
+  const schema = `{
+    "vendor": "string",
+    "referenceNumber": "string",
+    "taxRate": number,
+    "chargedTax": number or null,
+    "bankAccount": "string",
+    "lines": [
+      { "sku": "string", "description": "string", "qty": number, "unitPrice": number }
+    ]
+  }`;
+  const prompt = `Extract structured data from this ${kind === 'po' ? 'purchase order' : 'invoice'}, which may span multiple pages. Return ONLY valid JSON matching this schema:
+${schema}
+Rules:
+- sku: use the product code if visible, otherwise SKU-<index>.
+- qty and unitPrice: numbers only, no currency symbols.
+- taxRate: decimal (8% => 0.08).
+- chargedTax: printed tax amount, or null.
+- bankAccount: masked account if shown (e.g. bullets 1234).
+- Merge line items across all pages.`;
+
+  const content: any[] = [{ type: 'text', text: prompt }];
+  for (const img of images) {
+    content.push({
+      type: 'image_url',
+      image_url: { url: `data:image/png;base64,${img.toString('base64')}` }
+    });
+  }
+
+  let res: Response;
+  try {
+    res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content }],
+        response_format: { type: 'json_object' },
+        max_tokens: 3000
+      })
+    });
+  } catch (err) {
+    throw new ParseError('vision_extraction_failed', err instanceof Error ? err.message : 'Network error');
+  }
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new ParseError('vision_extraction_failed', `OpenAI vision error ${res.status}: ${errText.slice(0, 200)}`);
+  }
+
+  const payload = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const raw = payload?.choices?.[0]?.message?.content;
+  if (!raw) {
+    throw new ParseError('vision_extraction_failed', 'Empty vision response');
+  }
+
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new ParseError('vision_extraction_failed', 'Vision returned invalid JSON');
+  }
+
+  return {
+    vendor: String(parsed.vendor ?? '').slice(0, 200),
+    referenceNumber: String(parsed.referenceNumber ?? '').slice(0, 100),
+    taxRate: normalizeRate(parsed.taxRate),
+    chargedTax: parsed.chargedTax == null ? null : Number(parsed.chargedTax) || null,
+    bankAccount: String(parsed.bankAccount ?? ''),
+    lines: normalizeLines(parsed.lines),
+    rawText: ''
+  };
+}
+
+function normalizeRate(value: unknown): number {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) return 0;
+  return n > 1 ? n / 100 : n;
+}
+
+function normalizeLines(raw: unknown): LineItem[] {
+  if (!Array.isArray(raw)) return [];
+  const lines: LineItem[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const l = raw[i] as Record<string, unknown> | null | undefined;
+    if (!l) continue;
+    const qty = Number(l.qty);
+    const unitPrice = Number(l.unitPrice);
+    if (!Number.isFinite(qty) || !Number.isFinite(unitPrice) || qty <= 0) continue;
+    const desc = String(l.description ?? '').trim();
+    if (!desc) continue;
+    const sku = String(l.sku ?? '').trim() || `SKU-${i + 1}`;
+    lines.push({ sku, description: desc, qty, unitPrice });
+  }
+  return lines;
 }
 
 async function parseWithApi(text: string, kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {

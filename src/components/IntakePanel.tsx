@@ -49,6 +49,12 @@ export function IntakePanel() {
           toast.error('Only PDF files are accepted.');
         } else if (err.code === 'invalid_pdf_format') {
           toast.error('Could not read the PDF format. Please ensure they are valid PDFs.');
+        } else if (err.code === 'api_key_required_for_scanned_pdf') {
+          toast.error('This looks like a scanned PDF. Add an AI key in Detection Rules, then retry.');
+        } else if (err.code === 'vision_extraction_failed') {
+          toast.error('Could not extract data from the scanned PDF. Upload a clearer scan and try again.');
+        } else if (err.code === 'vision_dependency_missing') {
+          toast.error('Server is missing the vision dependency. Run npm install in server/.');
         } else {
           toast.error(`Upload failed: ${err.message}`);
         }
