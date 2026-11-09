@@ -14,6 +14,7 @@ interface CheckRow {
   bank_account: string;
   bank_on_file: string;
   status: 'held' | 'approved' | 'rejected';
+  extraction_uncertain: boolean;
 }
 
 interface LineRow {
@@ -29,7 +30,7 @@ export async function loadChecks(filter?: { status?: 'held' | 'approved' | 'reje
   const where = filter?.status ? 'WHERE status = $1' : '';
   const params = filter?.status ? [filter.status] : [];
   const { rows: checks } = await pool.query<CheckRow>(
-    `SELECT id, vendor, po_number, invoice_number, received_at, tax_rate::text, invoice_tax_charged::text, bank_account, bank_on_file, status
+    `SELECT id, vendor, po_number, invoice_number, received_at, tax_rate::text, invoice_tax_charged::text, bank_account, bank_on_file, status, extraction_uncertain
      FROM checks ${where} ORDER BY received_at DESC`,
     params
   );
@@ -60,7 +61,7 @@ export async function loadChecks(filter?: { status?: 'held' | 'approved' | 'reje
 
 export async function loadCheck(id: string): Promise<Invoice | null> {
   const { rows: checks } = await pool.query<CheckRow>(
-    `SELECT id, vendor, po_number, invoice_number, received_at, tax_rate::text, invoice_tax_charged::text, bank_account, bank_on_file, status
+    `SELECT id, vendor, po_number, invoice_number, received_at, tax_rate::text, invoice_tax_charged::text, bank_account, bank_on_file, status, extraction_uncertain
      FROM checks WHERE id = $1`,
     [id]
   );
@@ -98,7 +99,8 @@ function rowToInvoice(c: CheckRow, items: { po: LineItem[]; invoice: LineItem[] 
     bankOnFile: c.bank_on_file,
     poLines: items.po,
     invoiceLines: items.invoice,
-    status: c.status
+    status: c.status,
+    extractionUncertain: c.extraction_uncertain
   };
 }
 
@@ -107,9 +109,9 @@ export async function insertCheck(invoice: Invoice, createdBy: string): Promise<
   try {
     await client.query('BEGIN');
     await client.query(
-      `INSERT INTO checks (id, vendor, po_number, invoice_number, received_at, tax_rate, invoice_tax_charged, bank_account, bank_on_file, status, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [invoice.id, invoice.vendor, invoice.poNumber, invoice.invoiceNumber, invoice.receivedAt, invoice.taxRate, invoice.invoiceTaxCharged, invoice.bankAccount, invoice.bankOnFile, invoice.status, createdBy]
+      `INSERT INTO checks (id, vendor, po_number, invoice_number, received_at, tax_rate, invoice_tax_charged, bank_account, bank_on_file, status, created_by, extraction_uncertain)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [invoice.id, invoice.vendor, invoice.poNumber, invoice.invoiceNumber, invoice.receivedAt, invoice.taxRate, invoice.invoiceTaxCharged, invoice.bankAccount, invoice.bankOnFile, invoice.status, createdBy, invoice.extractionUncertain ?? false]
     );
     let pos = 0;
     for (const l of invoice.poLines) {

@@ -1,4 +1,5 @@
 import pdf from 'pdf-parse';
+import { z } from 'zod';
 import { LineItem } from '../engine/types';
 import { AiConfig, AiError, AiPart, callAi, parseAiJson } from './ai';
 
@@ -10,7 +11,23 @@ export interface ParsedDoc {
   bankAccount: string;
   lines: LineItem[];
   rawText: string;
+  confidence?: 'low' | 'med' | 'high';
 }
+
+const visionSchema = z.object({
+  vendor: z.string().default('Unknown vendor'),
+  referenceNumber: z.string().default('INV-UNKNOWN'),
+  taxRate: z.union([z.number(), z.string()]).optional().transform(v => normalizeRate(v)),
+  chargedTax: z.union([z.number(), z.string(), z.null()]).optional().transform(v => v === null || v === undefined ? null : Number(v) || null),
+  bankAccount: z.string().optional().default(''),
+  confidence: z.enum(['low', 'med', 'high']).optional().default('high'),
+  lines: z.array(z.object({
+    sku: z.string().optional().default(''),
+    description: z.string(),
+    qty: z.union([z.number(), z.string()]).transform(v => Number(v) || 0),
+    unitPrice: z.union([z.number(), z.string()]).transform(v => Number(v) || 0)
+  }))
+});
 
 export class ParseError extends Error {
   code: string;
@@ -22,7 +39,7 @@ export class ParseError extends Error {
 }
 
 const MIN_TEXT_LENGTH = 100;
-const MAX_VISION_PAGES = 5;
+const MAX_VISION_PAGES = 10;
 
 function hasUsableContent(doc: ParsedDoc): boolean {
   return doc.lines.length > 0;
@@ -43,7 +60,12 @@ export async function parsePdf(
   try {
     const data = await pdf(buffer);
     text = data.text ?? '';
+    const pageCount = data.numpages || 0;
+    if (pageCount > 10) {
+      throw new ParseError('pdf_too_large', 'PDF exceeds 10 pages. Please upload a shorter document.');
+    }
   } catch (err) {
+    if (err instanceof ParseError) throw err;
     console.error('[pdf] pdf-parse failed, attempting vision fallback:', err);
     if (!hasConfig || !aiConfig) {
       throw new ParseError('invalid_pdf_format', err instanceof Error ? err.message : 'PDF parse error');
@@ -132,64 +154,69 @@ async function parseWithVision(
   kind: 'po' | 'invoice',
   aiConfig: AiConfig
 ): Promise<ParsedDoc> {
-  const schema = `{
-    "vendor": "string",
-    "referenceNumber": "string",
-    "taxRate": number,
-    "chargedTax": number or null,
-    "bankAccount": "string",
-    "lines": [
-      { "sku": "string", "description": "string", "qty": number, "unitPrice": number }
-    ]
-  }`;
-  const prompt = `Extract structured data from this ${kind === 'po' ? 'purchase order' : 'invoice'}, which may span multiple pages. Return ONLY valid JSON matching this schema:
-${schema}
-Rules:
-- sku: use the product code if visible, otherwise SKU-<index>.
-- qty and unitPrice: numbers only, no currency symbols.
-- taxRate: decimal (8% => 0.08).
-- chargedTax: printed tax amount, or null.
-- bankAccount: masked account if shown (e.g. bullets 1234).
-- Merge line items across all pages.`;
-
-  const parts: AiPart[] = [{ type: 'text', text: prompt }];
+  const parts: AiPart[] = [];
   for (const img of images) {
     parts.push({ type: 'image', mimeType: 'image/png', dataBase64: img.toString('base64') });
   }
 
-  let raw: string;
-  try {
-    raw = await callAi(aiConfig, parts);
-  } catch (err) {
-    if (err instanceof AiError) {
-      throw new ParseError('vision_extraction_failed', err.message);
+  let attempt = 0;
+  let lastError = '';
+
+  while (attempt < 3) {
+    const prompt = `You are an expert data extraction assistant for accounting. Analyze the provided ${kind === 'po' ? 'purchase order' : 'invoice'} pages.
+Return ONLY a valid JSON object matching this schema:
+{
+  "vendor": "string (name of the vendor)",
+  "referenceNumber": "string (invoice or PO number)",
+  "taxRate": number (tax rate as decimal, e.g., 8% => 0.08),
+  "chargedTax": number or null (explicit tax amount printed, else null),
+  "bankAccount": "string (masked bank account if shown)",
+  "confidence": "high | med | low (based on document clarity)",
+  "lines": [
+    { "sku": "string (or SKU-1, SKU-2)", "description": "string", "qty": number, "unitPrice": number }
+  ]
+}
+Important rules:
+- Read ALL pages and merge the line items.
+- If a line item has a total but no unit price, calculate unitPrice = total / qty.
+- Verify qty * unitPrice = line total. If math is wrong, use the unitPrice and qty as printed.
+- Do not skip items.
+- Do not include markdown code blocks. Just the raw JSON object.
+${lastError ? `\nYour previous response failed validation with error: ${lastError}\nPlease fix the JSON structure and types.` : ''}`;
+
+    const reqParts = [{ type: 'text' as const, text: prompt }, ...parts];
+    try {
+      const raw = await callAi(aiConfig, reqParts);
+      const json = parseAiJson(raw);
+      const parsed = visionSchema.parse(json);
+      return {
+        vendor: parsed.vendor.slice(0, 200),
+        referenceNumber: parsed.referenceNumber.slice(0, 100),
+        taxRate: parsed.taxRate,
+        chargedTax: parsed.chargedTax,
+        bankAccount: parsed.bankAccount,
+        lines: parsed.lines.map((l, i) => ({
+          ...l,
+          sku: l.sku.trim() || `SKU-${i + 1}`
+        })).filter(l => l.description && l.qty > 0),
+        rawText: '',
+        confidence: parsed.confidence
+      };
+    } catch (err: any) {
+      lastError = err instanceof Error ? err.message : String(err);
+      attempt++;
+      if (attempt >= 3) {
+        throw new ParseError('vision_extraction_failed', `Failed after 3 attempts: ${lastError}`);
+      }
     }
-    throw new ParseError(
-      'vision_extraction_failed',
-      err instanceof Error ? err.message : 'Vision call failed'
-    );
   }
-
-  let parsed: Record<string, unknown>;
-  try {
-    parsed = parseAiJson(raw);
-  } catch {
-    throw new ParseError('vision_extraction_failed', 'Vision returned invalid JSON');
-  }
-
-  return {
-    vendor: String(parsed.vendor ?? '').slice(0, 200),
-    referenceNumber: String(parsed.referenceNumber ?? '').slice(0, 100),
-    taxRate: normalizeRate(parsed.taxRate),
-    chargedTax: parsed.chargedTax == null ? null : Number(parsed.chargedTax) || null,
-    bankAccount: String(parsed.bankAccount ?? ''),
-    lines: normalizeLines(parsed.lines),
-    rawText: ''
-  };
+  throw new ParseError('vision_extraction_failed', 'Unreachable error');
 }
 
 function normalizeRate(value: unknown): number {
-  const n = Number(value);
+  if (value === null || value === undefined) return 0;
+  const raw = typeof value === 'string' ? value.replace('%', '').trim() : value;
+  const n = Number(raw);
   if (!Number.isFinite(n) || n < 0) return 0;
   return n > 1 ? n / 100 : n;
 }

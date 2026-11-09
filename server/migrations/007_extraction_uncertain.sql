@@ -1,0 +1,1 @@
+ALTER TABLE checks ADD COLUMN IF NOT EXISTS extraction_uncertain BOOLEAN NOT NULL DEFAULT false;

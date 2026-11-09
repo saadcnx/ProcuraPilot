@@ -55,6 +55,8 @@ export function IntakePanel() {
           toast.error('Could not extract data from the scanned PDF. Upload a clearer scan and try again.');
         } else if (err.code === 'vision_dependency_missing') {
           toast.error('Server is missing the vision dependency. Run npm install in server/.');
+        } else if (err.code === 'pdf_too_large') {
+          toast.error('PDF exceeds 10 pages. Please upload a shorter document.');
         } else {
           toast.error(`Upload failed: ${err.message}`);
         }

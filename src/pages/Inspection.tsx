@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeftIcon, LockIcon, SearchXIcon, SirenIcon } from 'lucide-react';
+import { ArrowLeftIcon, LockIcon, SearchXIcon, SirenIcon, TriangleAlertIcon } from 'lucide-react';
 import { useCheck, useRules } from '../lib/queries';
 import { ComparisonTable } from '../components/ComparisonTable';
 import { DecisionPanel } from '../components/DecisionPanel';
@@ -80,6 +80,17 @@ export function Inspection() {
           {format(new Date(invoice.receivedAt), 'MMM d, yyyy, h:mm a')}
         </p>
       </header>
+
+      {invoice.extractionUncertain && (
+        <div className="mt-6 space-y-2">
+          <div role="status" className="flex gap-3 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container">
+            <TriangleAlertIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <p>
+              <span className="font-medium">Low extraction confidence.</span> The AI had trouble reading this document. Double-check all line items and totals manually.
+            </p>
+          </div>
+        </div>
+      )}
 
       {(frozen || escalated) && (
         <div className="mt-6 space-y-2">
