@@ -1,5 +1,3 @@
-
-```tsx
 import React, { useMemo, useState } from 'react';
 import { UserPlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
