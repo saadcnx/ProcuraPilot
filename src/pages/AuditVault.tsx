@@ -1,5 +1,4 @@
 
-```tsx
 import React, { useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { CheckIcon, DownloadIcon, LockIcon, SearchIcon } from 'lucide-react';
@@ -51,7 +50,7 @@ export function AuditVault() {
     setExporting(true);
     try {
       await exportAuditCsv();
-      toast.success('Exported ' + entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies') + '.');
+      toast.success(`Exported ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}.`);
     } catch {
       toast.error('Could not download audit log.');
     } finally {
@@ -119,7 +118,7 @@ export function AuditVault() {
             Could not load the audit log. Refresh the page.
           </p>
         ) : isLoading ? (
-          <p className="px-6 py-16 text-center text-sm text-ink-variant">Loading audit log...</p>
+          <p className="px-6 py-16 text-center text-sm text-ink-variant">Loading audit log\u2026</p>
         ) : filtered.length === 0 ? (
           <p className="px-6 py-16 text-center text-sm text-ink-variant">
             No entries match these filters.
@@ -171,7 +170,7 @@ export function AuditVault() {
                       <p className="text-xs text-ink-variant">{roleText(entry)}</p>
                     </td>
                     <td className="max-w-sm py-4 pl-3 pr-5 text-ink-variant">
-                      {entry.reason ?? '-'}
+                      {entry.reason ?? '\u2014'}
                     </td>
                   </tr>
                 ))}
