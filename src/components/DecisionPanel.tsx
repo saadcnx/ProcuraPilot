@@ -1,175 +1,102 @@
-import React, { useMemo, useState } from 'react';
-import { UserPlusIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { EyeIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
-import { usePatchUser, useUsers } from '../lib/queries';
-import { AddUserDialog } from '../components/AddUserDialog';
-import { Button } from '../components/Button';
-import { Chip } from '../components/Chip';
-import { Dialog } from '../components/Dialog';
-import { TeamUser } from '../../shared/types';
+import { ApiError } from '../lib/api';
+import { useDecide } from '../lib/queries';
+import { flagMeta } from '../data/flagMeta';
+import { Invoice, ComparisonResult } from '../../shared/types';
+import { formatCurrency, formatSignedCurrency } from '../utils/currency';
+import { Button } from './Button';
+import { Dialog } from './Dialog';
+import { TextField } from './TextField';
 
-const HIGH_OVERRIDES = 5;
+const MIN_REASON = 20;
 
-export function People() {
-  const { data, isLoading, error } = useUsers();
-  const { user: currentUser } = useAuth();
-  const patchMutation = usePatchUser();
-  const [adding, setAdding] = useState(false);
-  const [revoking, setRevoking] = useState<TeamUser | null>(null);
-  const canManage = currentUser?.role === 'boss';
-  const users = data?.users ?? [];
+interface DecisionPanelProps {
+  invoice: Invoice;
+  result: ComparisonResult;
+}
 
-  const sorted = useMemo(
-    () =>
-      [...users].sort(
-        (a, b) => Number(b.active) - Number(a.active) || b.forceApprovals - a.forceApprovals
-      ),
-    [users]
-  );
+export function DecisionPanel({ invoice, result }: DecisionPanelProps) {
+  const { user } = useAuth();
+  const decideMutation = useDecide();
+  const navigate = useNavigate();
+  const [reason, setReason] = useState('');
+  const [confirmReject, setConfirmReject] = useState(false);
 
-  const confirmRevoke = () => {
-    if (!revoking) return;
-    const target = revoking;
-    patchMutation.mutate(
-      { id: target.id, active: false },
-      {
-        onSuccess: () => {
-          toast.success(`${target.name} can no longer sign in.`);
-          setRevoking(null);
-        },
-        onError: () => toast.error('Could not revoke access.')
+  const isApprover = user?.role === 'boss';
+  const reasonLength = reason.trim().length;
+  const reasonValid = reasonLength >= MIN_REASON;
+  const pending = decideMutation.isPending;
+
+  const handleReject = async () => {
+    try {
+      await decideMutation.mutateAsync({ id: invoice.id, decision: 'rejected' });
+      setConfirmReject(false);
+      toast.success(`Rejected. Dispute report sent to ${invoice.vendor}.`);
+      navigate('/queue');
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'signer_only') {
+        toast.error('Only an approver can reject this bill.');
+      } else {
+        toast.error('Could not reject. Try again.');
       }
-    );
+    }
   };
 
-  const restore = (user: TeamUser) => {
-    patchMutation.mutate(
-      { id: user.id, active: true },
-      {
-        onSuccess: () => toast.success(`${user.name}'s access restored.`),
-        onError: () => toast.error('Could not restore access.')
+  const handleForceApprove = async () => {
+    if (!reasonValid) return;
+    try {
+      await decideMutation.mutateAsync({
+        id: invoice.id,
+        decision: 'force-approved',
+        reason: reason.trim()
+      });
+      toast.success(
+        `${formatCurrency(result.invoiceTotal)} released. Override recorded in the audit vault.`
+      );
+      navigate('/queue');
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'signer_only') {
+        toast.error('Only an approver can force approve.');
+      } else if (err instanceof ApiError && err.code === 'already_decided') {
+        toast.error('This bill has already been decided.');
+      } else {
+        toast.error('Could not approve. Try again.');
       }
-    );
+    }
   };
 
   return (
-    <div className="mx-auto max-w-[1280px]">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[28px] leading-9 text-ink">People & authority</h1>
-          <p className="mt-1 text-sm text-ink-variant">
-            Who can release money, and how often they've overridden the matcher.
-          </p>
-        </div>
-        {canManage && (
-          <Button icon={UserPlusIcon} onClick={() => setAdding(true)}>
-            Add person
-          </Button>
-        )}
-      </header>
-
-      {error && (
-        <div className="mb-4 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container">
-          Could not load people. Refresh the page.
-        </div>
-      )}
-
-      <section className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest">
-        <div
-          className={`hidden gap-x-4 border-b border-outline-variant px-5 py-3 text-xs font-medium text-ink-variant md:grid ${
-            canManage
-              ? 'md:grid-cols-[minmax(0,1fr)_200px_140px_150px]'
-              : 'md:grid-cols-[minmax(0,1fr)_200px_140px]'
-          }`}
-        >
-          <span>Person</span>
-          <span>Authority</span>
-          <span className="text-right">Force approvals</span>
-          {canManage && <span className="text-right">Access</span>}
-        </div>
-        {isLoading ? (
-          <div className="px-6 py-16 text-center text-sm text-ink-variant">Loading people…</div>
+    <aside className="space-y-4 lg:sticky lg:top-10">
+      <section
+        aria-labelledby="caught-title"
+        className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5"
+      >
+        <h2 id="caught-title" className="text-base font-medium text-ink">
+          What the matcher caught
+        </h2>
+        {result.flags.length === 0 ? (
+          <p className="mt-3 text-sm text-ink-variant">No mismatches under the current rules.</p>
         ) : (
-          <ul className="divide-y divide-outline-variant">
-            {sorted.map((user) => {
-              const isSelf = user.id === currentUser?.id;
-              const high = user.forceApprovals >= HIGH_OVERRIDES;
+          <ul className="mt-4 space-y-4">
+            {result.flags.map((flag, index) => {
+              const Icon = flagMeta[flag.kind].icon;
               return (
-                <li
-                  key={user.id}
-                  className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-5 py-4 ${
-                    canManage
-                      ? 'md:grid-cols-[minmax(0,1fr)_200px_140px_150px]'
-                      : 'md:grid-cols-[minmax(0,1fr)_200px_140px]'
-                  } ${user.active ? '' : 'opacity-60'}`}
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary-container text-sm font-medium text-on-secondary-container">
-                      {user.name
-                        .split(' ')
-                        .map((p) => p[0])
-                        .join('')
-                        .slice(0, 2)}
+                <li key={`${flag.kind}-${flag.sku ?? index}`} className="flex gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blush text-on-tertiary-container">
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-ink">{flagMeta[flag.kind].label}</p>
+                    <p className="text-sm text-ink-variant">{flag.message}</p>
+                  </div>
+                  {Math.abs(flag.amount) >= 0.005 && (
+                    <span className="shrink-0 text-sm font-medium tabular-nums text-on-tertiary-container">
+                      {formatSignedCurrency(flag.amount)}
                     </span>
-                    <div className="min-w-0">
-                      <p className="flex flex-wrap items-center gap-2 font-medium text-ink">
-                        <span className="truncate">{user.name}</span>
-                        {isSelf && <span className="text-xs font-normal text-ink-variant">(you)</span>}
-                        {!user.active && <Chip>Revoked</Chip>}
-                      </p>
-                      <p className="truncate text-sm text-ink-variant">{user.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="col-start-1 row-start-2 text-sm md:col-start-auto md:row-start-auto">
-                    <p className="text-ink">{user.role === 'boss' ? 'Approver' : 'Inspector'}</p>
-                    <p className="text-xs text-ink-variant">
-                      {user.role === 'boss' ? 'Can release payment' : 'Review only'}
-                    </p>
-                  </div>
-
-                  <div className="col-start-2 row-span-2 row-start-1 text-right md:col-start-auto md:row-span-1 md:row-start-auto">
-                    {user.role === 'boss' ? (
-                      <>
-                        <p
-                          className={`text-2xl tabular-nums ${
-                            high ? 'font-medium text-on-tertiary-container' : 'text-ink'
-                          }`}
-                        >
-                          {user.forceApprovals}
-                        </p>
-                        {high && (
-                          <p className="text-xs text-on-tertiary-container">Above team norm</p>
-                        )}
-                      </>
-                    ) : (
-                      <p className="text-sm text-ink-variant">No authority</p>
-                    )}
-                  </div>
-
-                  {canManage && (
-                    <div className="col-span-2 flex justify-end md:col-span-1">
-                      {user.active ? (
-                        <Button
-                          variant="text"
-                          className="text-error hover:bg-error/[0.08]"
-                          disabled={isSelf || patchMutation.isPending}
-                          title={isSelf ? 'You can\u2019t revoke your own access' : undefined}
-                          onClick={() => setRevoking(user)}
-                        >
-                          Revoke access
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="text"
-                          disabled={patchMutation.isPending}
-                          onClick={() => restore(user)}
-                        >
-                          Restore access
-                        </Button>
-                      )}
-                    </div>
                   )}
                 </li>
               );
@@ -178,32 +105,76 @@ export function People() {
         )}
       </section>
 
-      <AddUserDialog open={adding} onClose={() => setAdding(false)} />
+      <section aria-labelledby="decision-title" className="rounded-xl bg-surface-container p-5">
+        <h2 id="decision-title" className="text-base font-medium text-ink">
+          Decision
+        </h2>
+        {isApprover ? (
+          <>
+            <p className="mt-1 text-sm text-ink-variant">
+              Signed as {user?.name}. Decisions can't be edited afterwards.
+            </p>
+            <div className="mt-5">
+              <TextField
+                label="Reason for override"
+                multiline
+                rows={4}
+                value={reason}
+                onChange={setReason}
+                labelBg="bg-surface-container"
+                helper={
+                  reasonValid
+                    ? `${reasonLength} characters`
+                    : `Required to force approve — ${MIN_REASON - reasonLength} more characters`
+                }
+              />
+            </div>
+            <div className="mt-4 flex flex-col gap-2">
+              <Button disabled={!reasonValid || pending} loading={pending} onClick={handleForceApprove}>
+                Force approve {formatCurrency(result.invoiceTotal)}
+              </Button>
+              <Button
+                variant="outlined-danger"
+                disabled={pending}
+                onClick={() => setConfirmReject(true)}
+              >
+                Reject and dispute
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="mt-3 flex gap-3 text-sm text-ink-variant">
+            <EyeIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <p>
+              You're signed in as an inspector. You can review every mismatch, but only an approver
+              can reject this bill or release payment.
+            </p>
+          </div>
+        )}
+      </section>
+
       <Dialog
-        open={revoking !== null}
-        onClose={() => setRevoking(null)}
-        title="Revoke access?"
+        open={confirmReject}
+        onClose={() => setConfirmReject(false)}
+        title="Reject this bill?"
         description={
           <p>
-            {revoking?.name} will be signed out and blocked from signing in immediately. Their past
-            decisions stay in the audit vault.
+            {invoice.invoiceNumber} from {invoice.vendor} will be cancelled and a dispute report
+            listing {result.flags.length} issue{result.flags.length === 1 ? '' : 's'} will be sent
+            to the vendor.
           </p>
         }
         actions={
           <>
-            <Button variant="text" onClick={() => setRevoking(null)}>
+            <Button variant="text" onClick={() => setConfirmReject(false)}>
               Cancel
             </Button>
-            <Button
-              variant="danger"
-              loading={patchMutation.isPending}
-              onClick={confirmRevoke}
-            >
-              Revoke access
+            <Button variant="danger" loading={pending} onClick={handleReject}>
+              Reject and send report
             </Button>
           </>
         }
       />
-    </div>
+    </aside>
   );
 }

@@ -89,7 +89,7 @@ export function People() {
           {canManage && <span className="text-right">Access</span>}
         </div>
         {isLoading ? (
-          <div className="px-6 py-16 text-center text-sm text-ink-variant">Loading people\u2026</div>
+          <div className="px-6 py-16 text-center text-sm text-ink-variant">Loading people…</div>
         ) : (
           <ul className="divide-y divide-outline-variant">
             {sorted.map((user) => {
@@ -155,7 +155,7 @@ export function People() {
                           variant="text"
                           className="text-error hover:bg-error/[0.08]"
                           disabled={isSelf || patchMutation.isPending}
-                          title={isSelf ? 'You can\u2019t revoke your own access' : undefined}
+                          title={isSelf ? 'You cannot revoke your own access' : undefined}
                           onClick={() => setRevoking(user)}
                         >
                           Revoke access
