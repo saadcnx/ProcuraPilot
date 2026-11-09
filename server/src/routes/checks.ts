@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { z } from 'zod';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { upload, readUploaded, deleteUploaded } from '../lib/upload';
-import { parsePdf } from '../lib/pdf';
+import { parsePdf, ParsedDoc } from '../lib/pdf';
 import { compareInvoice } from '../engine/compare';
 import { Invoice } from '../engine/types';
 import { loadChecks, loadCheck, insertCheck, setCheckStatus, loadRules } from '../db/repo';
@@ -44,7 +44,16 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
   }
   try {
     const [poBuf, invBuf] = await Promise.all([readUploaded(poFile.path), readUploaded(invoiceFile.path)]);
-    const [poParsed, invParsed] = await Promise.all([parsePdf(poBuf, 'po'), parsePdf(invBuf, 'invoice')]);
+    let poParsed: ParsedDoc;
+    let invParsed: ParsedDoc;
+
+    try {
+      [poParsed, invParsed] = await Promise.all([parsePdf(poBuf, 'po'), parsePdf(invBuf, 'invoice')]);
+    } catch {
+      res.status(422).json({ error: 'invalid_pdf_format' });
+      return;
+    }
+
     if (poParsed.lines.length === 0 || invParsed.lines.length === 0) {
       res.status(422).json({ error: 'could_not_parse_pdf', po_lines: poParsed.lines.length, invoice_lines: invParsed.lines.length });
       return;
