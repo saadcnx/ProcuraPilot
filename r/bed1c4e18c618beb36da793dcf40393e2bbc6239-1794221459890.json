@@ -1,0 +1,91 @@
+{
+  "v": 2,
+  "id": "zc_mw954qv8_0aa3",
+  "sid": "s_mw94wexw_yelt",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794221459890,
+  "sha": "bed1c4e18c618beb36da793dcf40393e2bbc6239",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 7 file(s) across 1 prompt turn(s)",
+  "msgHash": "bc06634105ee04ed",
+  "files": [
+    [
+      "server/migrations/006_add_ai_telemetry.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/ai.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/rules.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 7,
+    "add": 1,
+    "mod": 6,
+    "del": 0,
+    "src": {
+      "ai": 7
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 8747,
+  "hash": "30320596ad5c2c1d"
+}
