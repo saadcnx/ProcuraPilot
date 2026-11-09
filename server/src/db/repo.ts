@@ -1,6 +1,7 @@
 import { pool } from './pool';
 import { DetectionRules, Invoice, LineItem } from '../engine/types';
 import { encryptSecret, decryptSecret } from '../lib/secretBox';
+import { randomUUID } from 'crypto';
 
 interface CheckRow {
   id: string;
@@ -58,8 +59,30 @@ export async function loadChecks(filter?: { status?: 'held' | 'approved' | 'reje
 }
 
 export async function loadCheck(id: string): Promise<Invoice | null> {
-  const result = await loadChecks();
-  return result.find((c) => c.id === id) ?? null;
+  const { rows: checks } = await pool.query<CheckRow>(
+    `SELECT id, vendor, po_number, invoice_number, received_at, tax_rate::text, invoice_tax_charged::text, bank_account, bank_on_file, status
+     FROM checks WHERE id = $1`,
+    [id]
+  );
+  if (checks.length === 0) return null;
+  const c = checks[0];
+  const { rows: items } = await pool.query<LineRow>(
+    `SELECT check_id, side, sku, description, qty::text, unit_price::text
+     FROM line_items WHERE check_id = $1 ORDER BY check_id, side, position`,
+    [id]
+  );
+  const po: LineItem[] = [];
+  const invoice: LineItem[] = [];
+  for (const it of items) {
+    const line: LineItem = {
+      sku: it.sku,
+      description: it.description,
+      qty: Number(it.qty),
+      unitPrice: Number(it.unit_price)
+    };
+    (it.side === 'po' ? po : invoice).push(line);
+  }
+  return rowToInvoice(c, { po, invoice });
 }
 
 function rowToInvoice(c: CheckRow, items: { po: LineItem[]; invoice: LineItem[] }): Invoice {
@@ -111,8 +134,54 @@ export async function insertCheck(invoice: Invoice, createdBy: string): Promise<
   }
 }
 
-export async function setCheckStatus(id: string, status: 'approved' | 'rejected'): Promise<void> {
-  await pool.query('UPDATE checks SET status = $2 WHERE id = $1', [id, status]);
+export async function setCheckStatus(id: string, status: 'approved' | 'rejected'): Promise<boolean> {
+  const res = await pool.query("UPDATE checks SET status = $2 WHERE id = $1 AND status = 'held'", [id, status]);
+  return (res.rowCount ?? 0) === 1;
+}
+
+export async function getVendorAccount(vendorName: string): Promise<string> {
+  const { rows } = await pool.query<{ bank_account: string }>(
+    'SELECT bank_account FROM vendors WHERE name ILIKE $1 LIMIT 1',
+    [vendorName]
+  );
+  return rows[0]?.bank_account ?? '';
+}
+
+export async function decideCheck(
+  id: string,
+  decision: 'rejected' | 'force-approved',
+  reason: string | undefined,
+  actor: { id: string; name: string; role: string },
+  variance: number,
+  flagCount: number,
+  invoiceNumber: string,
+  vendor: string
+): Promise<boolean> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const status = decision === 'rejected' ? 'rejected' : 'approved';
+    const res = await client.query("UPDATE checks SET status = $2 WHERE id = $1 AND status = 'held'", [id, status]);
+    if (res.rowCount !== 1) {
+      await client.query('ROLLBACK');
+      return false;
+    }
+    await client.query(
+      `INSERT INTO audit_log (id, check_id, invoice_number, vendor, variance, flag_count, decision, actor_id, actor_name, actor_role, reason)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [`audit-${randomUUID().slice(0, 8)}`, id, invoiceNumber, vendor, variance, flagCount, decision, actor.id, actor.name, actor.role, reason ?? null]
+    );
+    if (decision === 'force-approved') {
+      await client.query('UPDATE users SET force_approvals = force_approvals + 1 WHERE id = $1', [actor.id]);
+    }
+    await client.query('COMMIT');
+    return true;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 export async function loadRules(): Promise<DetectionRules> {

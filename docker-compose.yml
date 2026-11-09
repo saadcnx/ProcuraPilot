@@ -8,6 +8,7 @@ services:
       - "3001:3001"
     env_file:
       - ./server/.env
+    command: sh -c "node dist/db/migrate.js && node dist/index.js"
     restart: unless-stopped
 
   frontend:

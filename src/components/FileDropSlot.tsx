@@ -62,7 +62,7 @@ export function FileDropSlot({ label, hint, file, onSelect, disabled }: FileDrop
       <input
         type="file"
         className="sr-only"
-        accept=".pdf,.png,.jpg,.jpeg,.csv,.xlsx"
+        accept=".pdf"
         disabled={disabled}
         onChange={(e) => onSelect(e.target.files?.[0] ?? null)} />
       

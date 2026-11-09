@@ -11,8 +11,11 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ): void {
+  const isMulterError = (err as any)?.code === 'LIMIT_FILE_SIZE' || (err as Error)?.message === 'pdf_only';
   const status =
-    typeof (err as { status?: number })?.status === 'number'
+    isMulterError
+      ? 400
+      : typeof (err as { status?: number })?.status === 'number'
       ? (err as { status: number }).status
       : 500;
   const message =

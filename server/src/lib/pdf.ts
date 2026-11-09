@@ -125,17 +125,24 @@ function detectBankAccount(text: string): string {
 
 function detectLines(lines: string[]): LineItem[] {
   const items: LineItem[] = [];
-  for (const line of lines) {
-    const m = line.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s+(?:@\s*)?\$?([\d,]+\.\d{2})\s+(?:=?\s*\$?([\d,]+\.\d{2}))?$/);
+  for (let line of lines) {
+    line = line.trim();
+    const m = line.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s+(?:@\s*)?\$?([\d,]+\.\d{2})(?:\s+(?:=?\s*\$?([\d,]+\.\d{2}))?)?$/);
     if (!m) continue;
     const desc = m[1].trim();
     if (desc.length < 2 || /^[0-9\s]+$/.test(desc)) continue;
     const qty = Number(m[2]);
     const unitPrice = Number(m[3].replace(/,/g, ''));
     if (!qty || !unitPrice || unitPrice < 0.01) continue;
-    const skuMatch = desc.match(/^([A-Z]{2,}[A-Z0-9\-]*\d[A-Z0-9\-]*)\s+(.+)$/);
-    const sku = skuMatch ? skuMatch[1] : `SKU-${items.length + 1}`;
-    const description = skuMatch ? skuMatch[2] : desc;
+
+    let sku = `SKU-${items.length + 1}`;
+    let description = desc;
+    const skuMatch = desc.match(/^([A-Za-z0-9\-_]{3,15})\s+(.+)$/);
+    if (skuMatch && /[A-Za-z]/.test(skuMatch[1])) {
+      sku = skuMatch[1];
+      description = skuMatch[2];
+    }
+
     items.push({ sku, description, qty, unitPrice });
   }
   return items;

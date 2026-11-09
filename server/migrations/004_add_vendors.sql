@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS vendors (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  bank_account TEXT NOT NULL DEFAULT ''
+);
