@@ -2,8 +2,25 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { loadRules, saveRules } from '../db/repo';
+import { aiConfigFromRules, callAi } from '../lib/ai';
 
 const router = Router();
+
+router.get('/test-key', requireAuth, requireSigner, async (_req, res) => {
+  const rules = await loadRules();
+  const aiConfig = aiConfigFromRules(rules);
+  if (!aiConfig) {
+    res.json({ ok: false, error: 'no_key_configured' });
+    return;
+  }
+  try {
+    await callAi(aiConfig, [{ type: 'text', text: 'Return valid JSON: {"ok":true}' }]);
+    res.json({ ok: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'ai_connection_failed';
+    res.json({ ok: false, error: msg });
+  }
+});
 
 router.get('/', requireAuth, async (_req, res) => {
   const rules = await loadRules();

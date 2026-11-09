@@ -92,6 +92,8 @@ export const api = {
 
   getRules: () => apiFetch<{ rules: DetectionRules }>('/api/rules'),
 
+  testAiKey: () => apiFetch<{ ok: boolean; error?: string }>('/api/rules/test-key'),
+
   putRules: (rules: DetectionRules) =>
     apiFetch<{ rules: DetectionRules }>('/api/rules', {
       method: 'PUT',

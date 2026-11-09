@@ -3,6 +3,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
 import { useRules, useSaveRules } from '../lib/queries';
+import { api } from '../lib/api';
 import { Button } from '../components/Button';
 import { Switch } from '../components/Switch';
 import { TextField } from '../components/TextField';
@@ -31,6 +32,7 @@ export function DetectionRulesPage() {
 
   const [draft, setDraft] = useState<RulesDraft | null>(null);
   const [showKey, setShowKey] = useState(false);
+  const [testingKey, setTestingKey] = useState(false);
 
   useEffect(() => {
     if (rules) setDraft(toDraft(rules));
@@ -53,6 +55,19 @@ export function DetectionRulesPage() {
 
   const update = <K extends keyof RulesDraft,>(key: K, value: RulesDraft[K]) =>
     setDraft((d) => (d ? { ...d, [key]: value } : d));
+
+  const handleTestKey = async () => {
+    setTestingKey(true);
+    try {
+      const res = await api.testAiKey();
+      if (res.ok) toast.success('Connection successful! AI key is working.');
+      else toast.error(`Connection failed: ${res.error}`);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to test key.');
+    } finally {
+      setTestingKey(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!parsed) return;
@@ -202,26 +217,38 @@ export function DetectionRulesPage() {
           description="Used to read purchase orders and invoices during intake."
           last
         >
-          <TextField
-            label="API key"
-            type={showKey ? 'text' : 'password'}
-            value={draft.apiKey}
-            onChange={(v) => update('apiKey', v)}
-            error={errors.apiKey}
-            labelBg="bg-surface-container-lowest"
-            autoComplete="off"
-            disabled={!canEdit}
-            trailing={
-              <button
-                type="button"
-                onClick={() => setShowKey((s) => !s)}
-                aria-label={showKey ? 'Hide key' : 'Show key'}
-                className="flex h-12 w-12 items-center justify-center rounded-full text-ink-variant transition-colors duration-150 ease-out hover:bg-ink/[0.08]"
+          <div className="space-y-4">
+            <TextField
+              label="API key"
+              type={showKey ? 'text' : 'password'}
+              value={draft.apiKey}
+              onChange={(v) => update('apiKey', v)}
+              error={errors.apiKey}
+              labelBg="bg-surface-container-lowest"
+              autoComplete="off"
+              disabled={!canEdit}
+              trailing={
+                <button
+                  type="button"
+                  onClick={() => setShowKey((s) => !s)}
+                  aria-label={showKey ? 'Hide key' : 'Show key'}
+                  className="flex h-12 w-12 items-center justify-center rounded-full text-ink-variant transition-colors duration-150 ease-out hover:bg-ink/[0.08]"
+                >
+                  {showKey ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                </button>
+              }
+            />
+            <div className="flex justify-end">
+              <Button
+                variant="outlined"
+                onClick={handleTestKey}
+                loading={testingKey}
+                disabled={!canEdit || (!draft.apiKey.trim() && !rules.hasKey)}
               >
-                {showKey ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-              </button>
-            }
-          />
+                Test connection
+              </Button>
+            </div>
+          </div>
         </RuleRow>
 
         {canEdit && (

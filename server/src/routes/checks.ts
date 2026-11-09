@@ -7,7 +7,7 @@ import { parsePdf, ParsedDoc, ParseError } from '../lib/pdf';
 import { aiConfigFromRules } from '../lib/ai';
 import { compareInvoice } from '../engine/compare';
 import { Invoice } from '../engine/types';
-import { loadChecks, loadCheck, insertCheck, setCheckStatus, loadRules } from '../db/repo';
+import { loadChecks, loadCheck, insertCheck, setCheckStatus, loadRules, logAiUsage } from '../db/repo';
 import { pool } from '../db/pool';
 
 const router = Router();
@@ -55,7 +55,9 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
         parsePdf(poBuf, 'po', aiConfig),
         parsePdf(invBuf, 'invoice', aiConfig)
       ]);
+      if (aiConfig) await logAiUsage(true).catch(() => {});
     } catch (err) {
+      if (aiConfig) await logAiUsage(false, err instanceof Error ? err.message : String(err)).catch(() => {});
       if (err instanceof ParseError) {
         res.status(422).json({ error: err.code, message: err.message });
         return;
