@@ -33,12 +33,18 @@ export function IntakePanel() {
         );
       }
     } catch (err) {
-      if (err instanceof ApiError && err.code === 'could_not_parse_pdf') {
-        toast.error('Could not read one of the PDFs. Make sure they contain selectable text.');
-      } else if (err instanceof ApiError && err.code === 'both_files_required') {
-        toast.error('Attach both the purchase order and the invoice.');
-      } else if (err instanceof ApiError && err.code === 'pdf_only') {
-        toast.error('Only PDF files are accepted.');
+      if (err instanceof ApiError) {
+        if (err.code === 'could_not_parse_pdf') {
+          toast.error('Could not read one of the PDFs. Make sure they contain selectable text.');
+        } else if (err.code === 'both_files_required') {
+          toast.error('Attach both the purchase order and the invoice.');
+        } else if (err.code === 'pdf_only') {
+          toast.error('Only PDF files are accepted.');
+        } else if (err.code === 'invalid_pdf_format') {
+          toast.error('Could not read the PDF format. Please ensure they are valid PDFs.');
+        } else {
+          toast.error(`Upload failed: ${err.message}`);
+        }
       } else {
         toast.error('Upload failed. Try again.');
       }

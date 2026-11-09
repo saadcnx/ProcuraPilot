@@ -12,8 +12,21 @@ export interface ParsedDoc {
 }
 
 export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice'): Promise<ParsedDoc> {
-  const data = await pdf(buffer);
-  return parseDocumentText(data.text, kind);
+  try {
+    const data = await pdf(buffer);
+    return parseDocumentText(data.text, kind);
+  } catch (error) {
+    console.error('PDF parse error:', error);
+    return {
+      vendor: '',
+      referenceNumber: '',
+      taxRate: 0,
+      chargedTax: null,
+      bankAccount: '',
+      lines: [],
+      rawText: ''
+    };
+  }
 }
 
 export function parseDocumentText(text: string, kind: 'po' | 'invoice'): ParsedDoc {

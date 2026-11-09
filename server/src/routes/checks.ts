@@ -87,6 +87,9 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
       );
     }
     res.status(201).json({ invoice, result });
+  } catch (error) {
+    console.error('Check creation error:', error);
+    res.status(500).json({ error: 'internal_server_error', message: error instanceof Error ? error.message : String(error) });
   } finally {
     await Promise.all([deleteUploaded(poFile.path), deleteUploaded(invoiceFile.path)]);
   }
