@@ -1,0 +1,56 @@
+{
+  "v": 2,
+  "id": "zc_mw8nx9ha_xipe",
+  "sid": "s_mw8n8p22_kjm5",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794192557366,
+  "sha": "e8d105bef1aa794300f898abf2bd1416ecdc4da5",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 2 file(s) across 1 prompt turn(s)",
+  "msgHash": "d38c86ae05ee04ed",
+  "files": [
+    [
+      "src/pages/People.tsx",
+      "m",
+      "ps",
+      1,
+      0
+    ],
+    [
+      "src/pages/Queue.tsx",
+      "m",
+      "ps",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 2,
+    "add": 0,
+    "mod": 2,
+    "del": 0,
+    "src": {
+      "ps": 2
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 4,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5425,
+  "hash": "9688ac329c62b84d"
+}
