@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mw8nfsek_c5f5",
+  "sid": "s_mw8n8p22_kjm5",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794191742080,
+  "sha": "b5ac742d9c20281a2f5ef92530d03a34123beccb",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "src/pages/AuditVault.tsx",
+      "m",
+      "ps",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ps": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5395,
+  "hash": "93e08493e270688a"
+}
