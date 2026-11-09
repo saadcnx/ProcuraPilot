@@ -1,0 +1,98 @@
+{
+  "v": 2,
+  "id": "zc_mw95a0t3_2d34",
+  "sid": "s_mw94wexw_yelt",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794221705977,
+  "sha": "3558ef314bd149935d92b90ce8c82ff20c8b395d",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 8 file(s) across 1 prompt turn(s)",
+  "msgHash": "88abc0681a3e33ae",
+  "files": [
+    [
+      "server/migrations/007_extraction_uncertain.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "shared/types.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/engine/types.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/pdf.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/IntakePanel.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 8,
+    "add": 1,
+    "mod": 7,
+    "del": 0,
+    "src": {
+      "ai": 8
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 8438,
+  "hash": "cd5a71bb2df77740"
+}
