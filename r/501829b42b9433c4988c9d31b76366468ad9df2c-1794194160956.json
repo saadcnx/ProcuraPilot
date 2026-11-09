@@ -1,0 +1,64 @@
+{
+  "v": 2,
+  "id": "zc_mw8ovmtl_l3w1",
+  "sid": "s_mw8n8p22_kjm5",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794194160956,
+  "sha": "501829b42b9433c4988c9d31b76366468ad9df2c",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 2 file(s) across 1 prompt turn(s)",
+  "msgHash": "d38c86ae05ee04ed",
+  "files": [
+    [
+      "Dockerfile",
+      "m",
+      "ps",
+      1,
+      0
+    ],
+    [
+      "server/.env",
+      "m",
+      "ps",
+      1,
+      0
+    ],
+    [
+      "server/.env.example",
+      "d",
+      "man",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 3,
+    "add": 0,
+    "mod": 2,
+    "del": 1,
+    "src": {
+      "ps": 2,
+      "man": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 4,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5718,
+  "hash": "a04af6699cf15710"
+}
