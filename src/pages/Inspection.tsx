@@ -27,7 +27,7 @@ export function Inspection() {
     return (
       <div className="mx-auto max-w-[1280px]">
         {backLink}
-        <div className="py-16 text-center text-sm text-ink-variant">Loading invoice\u2026</div>
+        <div className="py-16 text-center text-sm text-ink-variant">Loading invoice…</div>
       </div>
     );
   }
