@@ -35,7 +35,14 @@ export function IntakePanel() {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.code === 'could_not_parse_pdf') {
-          toast.error('Could not read one of the PDFs. Make sure they contain selectable text.');
+          const details = err.body as { po_lines?: number; invoice_lines?: number };
+          if (details.po_lines === 0 && details.invoice_lines === 0) {
+            toast.error('Could not extract line items from either PDF. Please ensure they contain readable text.');
+          } else if (details.po_lines === 0) {
+            toast.error('Could not extract line items from the Purchase Order. Please ensure it contains readable text.');
+          } else {
+            toast.error('Could not extract line items from the Vendor Invoice. Please ensure it contains readable text.');
+          }
         } else if (err.code === 'both_files_required') {
           toast.error('Attach both the purchase order and the invoice.');
         } else if (err.code === 'pdf_only') {

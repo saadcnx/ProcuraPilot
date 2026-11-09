@@ -14,10 +14,12 @@ const API_URL =
 export class ApiError extends Error {
   status: number;
   code: string;
-  constructor(status: number, code: string) {
+  body: any;
+  constructor(status: number, code: string, body?: any) {
     super(code);
     this.status = status;
     this.code = code;
+    this.body = body;
   }
 }
 
@@ -40,7 +42,7 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   }
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new ApiError(res.status, body.error ?? 'request_failed');
+    throw new ApiError(res.status, body.error ?? 'request_failed', body);
   }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
