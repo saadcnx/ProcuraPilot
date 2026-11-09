@@ -1,5 +1,6 @@
 import pdf from 'pdf-parse';
 import { LineItem } from '../engine/types';
+import { AiConfig, AiError, AiPart, callAi, parseAiJson } from './ai';
 
 export interface ParsedDoc {
   vendor: string;
@@ -31,7 +32,11 @@ function looksScanned(text: string): boolean {
   return text.trim().length < MIN_TEXT_LENGTH;
 }
 
-export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: string): Promise<ParsedDoc> {
+export async function parsePdf(
+  buffer: Buffer,
+  kind: 'po' | 'invoice',
+  aiConfig?: AiConfig | null
+): Promise<ParsedDoc> {
   let data: { text: string };
   try {
     data = await pdf(buffer);
@@ -40,16 +45,15 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
   }
 
   const text = data.text ?? '';
-  const trimmedKey = (apiKey ?? '').trim();
-  const hasKey = trimmedKey.length > 10;
+  const hasConfig = !!aiConfig && (aiConfig.apiKey ?? '').trim().length > 10;
 
   const textDoc = parseDocumentText(text, kind);
   const textHasLines = textDoc.lines.length > 0;
 
   if (!looksScanned(text) && textHasLines) {
-    if (hasKey) {
+    if (hasConfig && aiConfig) {
       try {
-        const apiDoc = await parseWithApi(text, kind, trimmedKey);
+        const apiDoc = await parseWithApi(text, kind, aiConfig);
         if (hasUsableContent(apiDoc)) return apiDoc;
       } catch (apiError) {
         console.error('[pdf] API text parse failed, using regex:', apiError);
@@ -58,14 +62,14 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
     return textDoc;
   }
 
-  if (!hasKey) {
+  if (!hasConfig || !aiConfig) {
     throw new ParseError(
       'api_key_required_for_scanned_pdf',
-      'PDF has no readable text layer. Add an AI key in Detection Rules to read scanned documents.'
+      'PDF has no readable text layer. Configure an AI provider in Detection Rules to read scanned documents.'
     );
   }
 
-  const visionDoc = await parseScannedPdf(buffer, kind, trimmedKey);
+  const visionDoc = await parseScannedPdf(buffer, kind, aiConfig);
   if (!hasUsableContent(visionDoc)) {
     if (textHasLines) return textDoc;
     throw new ParseError('vision_extraction_failed', 'Could not extract line items from this scanned PDF.');
@@ -73,7 +77,11 @@ export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: 
   return visionDoc;
 }
 
-async function parseScannedPdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
+async function parseScannedPdf(
+  buffer: Buffer,
+  kind: 'po' | 'invoice',
+  aiConfig: AiConfig
+): Promise<ParsedDoc> {
   let toImages: (buf: Buffer, opts?: { scale?: number }) => Promise<AsyncIterable<Buffer>>;
   try {
     const dynamicImport = new Function('specifier', 'return import(specifier)') as (
@@ -108,10 +116,14 @@ async function parseScannedPdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey: s
     throw new ParseError('vision_extraction_failed', 'No pages could be rendered from PDF.');
   }
 
-  return parseWithVision(imageBuffers, kind, apiKey);
+  return parseWithVision(imageBuffers, kind, aiConfig);
 }
 
-async function parseWithVision(images: Buffer[], kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
+async function parseWithVision(
+  images: Buffer[],
+  kind: 'po' | 'invoice',
+  aiConfig: AiConfig
+): Promise<ParsedDoc> {
   const schema = `{
     "vendor": "string",
     "referenceNumber": "string",
@@ -132,44 +144,27 @@ Rules:
 - bankAccount: masked account if shown (e.g. bullets 1234).
 - Merge line items across all pages.`;
 
-  const content: any[] = [{ type: 'text', text: prompt }];
+  const parts: AiPart[] = [{ type: 'text', text: prompt }];
   for (const img of images) {
-    content.push({
-      type: 'image_url',
-      image_url: { url: `data:image/png;base64,${img.toString('base64')}` }
-    });
+    parts.push({ type: 'image', mimeType: 'image/png', dataBase64: img.toString('base64') });
   }
 
-  let res: Response;
+  let raw: string;
   try {
-    res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'user', content }],
-        response_format: { type: 'json_object' },
-        max_tokens: 3000
-      })
-    });
+    raw = await callAi(aiConfig, parts);
   } catch (err) {
-    throw new ParseError('vision_extraction_failed', err instanceof Error ? err.message : 'Network error');
-  }
-
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    throw new ParseError('vision_extraction_failed', `OpenAI vision error ${res.status}: ${errText.slice(0, 200)}`);
-  }
-
-  const payload = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-  const raw = payload?.choices?.[0]?.message?.content;
-  if (!raw) {
-    throw new ParseError('vision_extraction_failed', 'Empty vision response');
+    if (err instanceof AiError) {
+      throw new ParseError('vision_extraction_failed', err.message);
+    }
+    throw new ParseError(
+      'vision_extraction_failed',
+      err instanceof Error ? err.message : 'Vision call failed'
+    );
   }
 
   let parsed: Record<string, unknown>;
   try {
-    parsed = JSON.parse(raw);
+    parsed = parseAiJson(raw);
   } catch {
     throw new ParseError('vision_extraction_failed', 'Vision returned invalid JSON');
   }
@@ -208,7 +203,11 @@ function normalizeLines(raw: unknown): LineItem[] {
   return lines;
 }
 
-async function parseWithApi(text: string, kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
+async function parseWithApi(
+  text: string,
+  kind: 'po' | 'invoice',
+  aiConfig: AiConfig
+): Promise<ParsedDoc> {
   const prompt = `Extract the following data from this ${kind === 'po' ? 'purchase order' : 'invoice'} text and return ONLY a valid JSON object matching this exact schema:
 {
   "vendor": "string",
@@ -223,27 +222,16 @@ async function parseWithApi(text: string, kind: 'po' | 'invoice', apiKey: string
 Text:
 ${text}`;
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' }
-    })
-  });
-
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  const data = (await res.json()) as any;
-  const parsed = JSON.parse(data.choices[0].message.content);
+  const raw = await callAi(aiConfig, [{ type: 'text', text: prompt }]);
+  const parsed = parseAiJson(raw);
 
   return {
-    vendor: parsed.vendor || '',
-    referenceNumber: parsed.referenceNumber || '',
-    taxRate: parsed.taxRate || 0,
-    chargedTax: parsed.chargedTax || null,
-    bankAccount: parsed.bankAccount || '',
-    lines: parsed.lines || [],
+    vendor: String(parsed.vendor ?? ''),
+    referenceNumber: String(parsed.referenceNumber ?? ''),
+    taxRate: normalizeRate(parsed.taxRate),
+    chargedTax: parsed.chargedTax == null ? null : Number(parsed.chargedTax) || null,
+    bankAccount: String(parsed.bankAccount ?? ''),
+    lines: normalizeLines(parsed.lines),
     rawText: text
   };
 }

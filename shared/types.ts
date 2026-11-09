@@ -68,6 +68,9 @@ export interface DetectionRules {
   panicEmail: string;
   apiKey?: string;
   hasKey?: boolean;
+  aiProvider?: string;
+  aiModel?: string;
+  aiBaseUrl?: string;
 }
 
 export interface ComparisonRow {

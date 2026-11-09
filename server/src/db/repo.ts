@@ -192,10 +192,13 @@ export async function loadRules(): Promise<DetectionRules> {
     panic_threshold: string;
     panic_email: string;
     api_key_encrypted: string;
-  }>('SELECT tolerance_amount::text, tolerance_percent::text, bank_check, panic_threshold::text, panic_email, api_key_encrypted FROM rules WHERE id = 1');
+    ai_provider: string | null;
+    ai_model: string | null;
+    ai_base_url: string | null;
+  }>('SELECT tolerance_amount::text, tolerance_percent::text, bank_check, panic_threshold::text, panic_email, api_key_encrypted, ai_provider, ai_model, ai_base_url FROM rules WHERE id = 1');
   const r = rows[0];
   if (!r) {
-    return { toleranceAmount: 5, tolerancePercent: 1, bankCheck: true, panicThreshold: 10000, panicEmail: 'cfo@procurapilot.com', apiKey: '' };
+    return { toleranceAmount: 5, tolerancePercent: 1, bankCheck: true, panicThreshold: 10000, panicEmail: 'cfo@procurapilot.com', apiKey: '', aiProvider: 'openai', aiModel: 'gpt-4o-mini', aiBaseUrl: '' };
   }
   return {
     toleranceAmount: Number(r.tolerance_amount),
@@ -203,13 +206,26 @@ export async function loadRules(): Promise<DetectionRules> {
     bankCheck: r.bank_check,
     panicThreshold: Number(r.panic_threshold),
     panicEmail: r.panic_email,
-    apiKey: decryptSecret(r.api_key_encrypted)
+    apiKey: decryptSecret(r.api_key_encrypted),
+    aiProvider: r.ai_provider ?? 'openai',
+    aiModel: r.ai_model ?? '',
+    aiBaseUrl: r.ai_base_url ?? ''
   };
 }
 
 export async function saveRules(rules: DetectionRules): Promise<void> {
   await pool.query(
-    `UPDATE rules SET tolerance_amount=$1, tolerance_percent=$2, bank_check=$3, panic_threshold=$4, panic_email=$5, api_key_encrypted=$6, updated_at=NOW() WHERE id=1`,
-    [rules.toleranceAmount, rules.tolerancePercent, rules.bankCheck, rules.panicThreshold, rules.panicEmail, encryptSecret(rules.apiKey ?? '')]
+    `UPDATE rules SET tolerance_amount=$1, tolerance_percent=$2, bank_check=$3, panic_threshold=$4, panic_email=$5, api_key_encrypted=$6, ai_provider=$7, ai_model=$8, ai_base_url=$9, updated_at=NOW() WHERE id=1`,
+    [
+      rules.toleranceAmount,
+      rules.tolerancePercent,
+      rules.bankCheck,
+      rules.panicThreshold,
+      rules.panicEmail,
+      encryptSecret(rules.apiKey ?? ''),
+      rules.aiProvider ?? 'openai',
+      rules.aiModel ?? '',
+      rules.aiBaseUrl ?? ''
+    ]
   );
 }

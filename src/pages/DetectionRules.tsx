@@ -15,6 +15,9 @@ interface RulesDraft {
   panicThreshold: string;
   panicEmail: string;
   apiKey: string;
+  aiProvider: 'openai' | 'anthropic' | 'google';
+  aiModel: string;
+  aiBaseUrl: string;
 }
 
 type DraftErrors = Partial<Record<keyof RulesDraft, string>>;
@@ -142,6 +145,55 @@ export function DetectionRulesPage() {
         </RuleRow>
 
         <RuleRow
+          title="AI provider"
+          description="OpenAI-compatible endpoint (OpenAI, Groq, Together, OpenRouter, Ollama, etc.), Anthropic Claude, or Google Gemini."
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block text-xs text-ink-variant">Provider</span>
+              <select
+                value={draft.aiProvider}
+                onChange={(e) =>
+                  update('aiProvider', e.target.value as RulesDraft['aiProvider'])
+                }
+                disabled={!canEdit}
+                className="h-14 w-full rounded-[4px] border border-outline bg-transparent px-4 text-base text-ink outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="openai">OpenAI / compatible</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="google">Google Gemini</option>
+              </select>
+            </label>
+            <TextField
+              label="Model"
+              value={draft.aiModel}
+              onChange={(v) => update('aiModel', v)}
+              labelBg="bg-surface-container-lowest"
+              disabled={!canEdit}
+              helper={
+                draft.aiProvider === 'openai'
+                  ? 'e.g. gpt-4o-mini'
+                  : draft.aiProvider === 'anthropic'
+                  ? 'e.g. claude-3-5-sonnet-latest'
+                  : 'e.g. gemini-1.5-flash'
+              }
+            />
+          </div>
+          {draft.aiProvider === 'openai' && (
+            <div className="mt-4">
+              <TextField
+                label="Base URL (optional)"
+                value={draft.aiBaseUrl}
+                onChange={(v) => update('aiBaseUrl', v)}
+                labelBg="bg-surface-container-lowest"
+                disabled={!canEdit}
+                helper="Leave blank for api.openai.com. Set for Groq, Together, OpenRouter, Ollama, LM Studio."
+              />
+            </div>
+          )}
+        </RuleRow>
+
+        <RuleRow
           title="AI engine key"
           description="Used to read purchase orders and invoices during intake."
           last
@@ -233,7 +285,13 @@ function toDraft(rules: DetectionRules): RulesDraft {
     bankCheck: rules.bankCheck,
     panicThreshold: String(rules.panicThreshold),
     panicEmail: rules.panicEmail,
-    apiKey: rules.apiKey ?? ''
+    apiKey: rules.apiKey ?? '',
+    aiProvider:
+      rules.aiProvider === 'anthropic' || rules.aiProvider === 'google'
+        ? rules.aiProvider
+        : 'openai',
+    aiModel: rules.aiModel ?? '',
+    aiBaseUrl: rules.aiBaseUrl ?? ''
   };
 }
 
@@ -244,7 +302,10 @@ function fromDraft(draft: RulesDraft): DetectionRules {
     bankCheck: draft.bankCheck,
     panicThreshold: Number(draft.panicThreshold),
     panicEmail: draft.panicEmail.trim(),
-    apiKey: draft.apiKey.trim()
+    apiKey: draft.apiKey.trim(),
+    aiProvider: draft.aiProvider,
+    aiModel: draft.aiModel.trim(),
+    aiBaseUrl: draft.aiBaseUrl.trim()
   };
 }
 

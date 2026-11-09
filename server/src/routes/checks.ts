@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { upload, readUploaded, deleteUploaded } from '../lib/upload';
 import { parsePdf, ParsedDoc, ParseError } from '../lib/pdf';
+import { aiConfigFromRules } from '../lib/ai';
 import { compareInvoice } from '../engine/compare';
 import { Invoice } from '../engine/types';
 import { loadChecks, loadCheck, insertCheck, setCheckStatus, loadRules } from '../db/repo';
@@ -48,10 +49,11 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
     let invParsed: ParsedDoc;
 
     const rules = await loadRules();
+    const aiConfig = aiConfigFromRules(rules);
     try {
       [poParsed, invParsed] = await Promise.all([
-        parsePdf(poBuf, 'po', rules.apiKey),
-        parsePdf(invBuf, 'invoice', rules.apiKey)
+        parsePdf(poBuf, 'po', aiConfig),
+        parsePdf(invBuf, 'invoice', aiConfig)
       ]);
     } catch (err) {
       if (err instanceof ParseError) {

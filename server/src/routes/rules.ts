@@ -17,7 +17,10 @@ const rulesSchema = z.object({
   bankCheck: z.boolean(),
   panicThreshold: z.number().min(0).max(100_000_000),
   panicEmail: z.string().email().max(320),
-  apiKey: z.string().max(500).optional()
+  apiKey: z.string().max(500).optional(),
+  aiProvider: z.enum(['openai', 'anthropic', 'google']).optional(),
+  aiModel: z.string().max(120).optional(),
+  aiBaseUrl: z.string().max(500).optional()
 });
 
 router.put('/', requireAuth, requireSigner, async (req, res) => {
@@ -37,7 +40,10 @@ router.put('/', requireAuth, requireSigner, async (req, res) => {
     bankCheck: parsed.data.bankCheck,
     panicThreshold: parsed.data.panicThreshold,
     panicEmail: parsed.data.panicEmail,
-    apiKey: nextKey
+    apiKey: nextKey,
+    aiProvider: parsed.data.aiProvider ?? existing.aiProvider,
+    aiModel: parsed.data.aiModel ?? existing.aiModel,
+    aiBaseUrl: parsed.data.aiBaseUrl ?? existing.aiBaseUrl
   });
   const rules = await loadRules();
   const { apiKey, ...safe } = rules;

@@ -12,6 +12,7 @@ export interface Flag { kind: FlagKind; sku?: string; message: string; amount: n
 export interface DetectionRules {
   toleranceAmount: number; tolerancePercent: number; bankCheck: boolean;
   panicThreshold: number; panicEmail: string; apiKey: string;
+  aiProvider?: string; aiModel?: string; aiBaseUrl?: string;
 }
 export interface ComparisonRow {
   sku: string; description: string; po?: LineItem; billed?: LineItem;
