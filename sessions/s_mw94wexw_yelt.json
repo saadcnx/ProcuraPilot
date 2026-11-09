@@ -1,0 +1,15 @@
+{
+  "sid": "s_mw94wexw_yelt",
+  "startedAt": 1794221071270,
+  "client": {
+    "os": "Windows",
+    "browser": "Chrome",
+    "locale": "en-US",
+    "tz": "Asia/Karachi"
+  },
+  "fp": "0451ecdc62f0bb3e",
+  "tier": "pro",
+  "auth": "oauth",
+  "appVer": "5.7.1",
+  "aegisVer": "5.4.9"
+}
