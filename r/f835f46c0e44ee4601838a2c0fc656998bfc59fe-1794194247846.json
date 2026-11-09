@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mw8oxhv3_ds0m",
+  "sid": "s_mw8n8p22_kjm5",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794194247846,
+  "sha": "f835f46c0e44ee4601838a2c0fc656998bfc59fe",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "docker-compose.yml",
+      "m",
+      "ps",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ps": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 4,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5274,
+  "hash": "63b0cd3eb3a135eb"
+}
