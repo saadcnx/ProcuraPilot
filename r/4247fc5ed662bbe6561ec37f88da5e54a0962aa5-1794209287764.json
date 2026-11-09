@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mw8xvusv_32ps",
+  "sid": "s_mw8xnc90_z1hf",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794209287764,
+  "sha": "4247fc5ed662bbe6561ec37f88da5e54a0962aa5",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "server/src/db/createAdmin.ts",
+      "a",
+      "ai",
+      1,
+      2
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 1,
+    "mod": 0,
+    "del": 0,
+    "src": {
+      "ai": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 1,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 1,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 6190,
+  "hash": "9f78c1c978e9853f"
+}
