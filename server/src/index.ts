@@ -27,6 +27,10 @@ app.use(
 );
 app.use(express.json({ limit: '1mb' }));
 
+app.get('/', (_req, res) => {
+  res.json({ ok: true, message: 'ProcuraPilot API is running. Use /health for status.' });
+});
+
 app.get('/health', async (_req, res) => {
   const dbOk = await pingDb();
   if (!dbOk) {
