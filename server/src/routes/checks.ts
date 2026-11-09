@@ -47,8 +47,12 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
     let poParsed: ParsedDoc;
     let invParsed: ParsedDoc;
 
+    const rules = await loadRules();
     try {
-      [poParsed, invParsed] = await Promise.all([parsePdf(poBuf, 'po'), parsePdf(invBuf, 'invoice')]);
+      [poParsed, invParsed] = await Promise.all([
+        parsePdf(poBuf, 'po', rules.apiKey),
+        parsePdf(invBuf, 'invoice', rules.apiKey)
+      ]);
     } catch {
       res.status(422).json({ error: 'invalid_pdf_format' });
       return;
@@ -75,7 +79,6 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
       bankOnFile: invParsed.bankAccount,
       status: 'held'
     };
-    const rules = await loadRules();
     const result = compareInvoice(invoice, rules);
     if (result.isClean) invoice.status = 'approved';
     await insertCheck(invoice, req.user!.id);

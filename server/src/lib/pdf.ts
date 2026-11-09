@@ -11,22 +11,61 @@ export interface ParsedDoc {
   rawText: string;
 }
 
-export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice'): Promise<ParsedDoc> {
+export async function parsePdf(buffer: Buffer, kind: 'po' | 'invoice', apiKey?: string): Promise<ParsedDoc> {
   try {
     const data = await pdf(buffer);
+    if (apiKey && apiKey.length > 10) {
+      try {
+        return await parseWithApi(data.text, kind, apiKey);
+      } catch (apiError) {
+        console.error('API parse failed, falling back to regex:', apiError);
+      }
+    }
     return parseDocumentText(data.text, kind);
   } catch (error) {
     console.error('PDF parse error:', error);
-    return {
-      vendor: '',
-      referenceNumber: '',
-      taxRate: 0,
-      chargedTax: null,
-      bankAccount: '',
-      lines: [],
-      rawText: ''
-    };
+    return { vendor: '', referenceNumber: '', taxRate: 0, chargedTax: null, bankAccount: '', lines: [], rawText: '' };
   }
+}
+
+async function parseWithApi(text: string, kind: 'po' | 'invoice', apiKey: string): Promise<ParsedDoc> {
+  const prompt = `Extract the following data from this ${kind === 'po' ? 'purchase order' : 'invoice'} text and return ONLY a valid JSON object matching this exact schema:
+{
+  "vendor": "string",
+  "referenceNumber": "string",
+  "taxRate": number (e.g., 0.08 for 8%),
+  "chargedTax": number or null,
+  "bankAccount": "string",
+  "lines": [
+    { "sku": "string", "description": "string", "qty": number, "unitPrice": number }
+  ]
+}
+Text:
+${text}`;
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: 'json_object' }
+    })
+  });
+
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const data = await res.json();
+  const parsed = JSON.parse(data.choices[0].message.content);
+
+  return {
+    vendor: parsed.vendor || '',
+    referenceNumber: parsed.referenceNumber || '',
+    taxRate: parsed.taxRate || 0,
+    chargedTax: parsed.chargedTax || null,
+    bankAccount: parsed.bankAccount || '',
+    lines: parsed.lines || [],
+    rawText: text
+  };
 }
 
 export function parseDocumentText(text: string, kind: 'po' | 'invoice'): ParsedDoc {
