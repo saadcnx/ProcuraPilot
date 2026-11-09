@@ -37,15 +37,23 @@ export async function parsePdf(
   kind: 'po' | 'invoice',
   aiConfig?: AiConfig | null
 ): Promise<ParsedDoc> {
-  let data: { text: string };
-  try {
-    data = await pdf(buffer);
-  } catch (err) {
-    throw new ParseError('invalid_pdf_format', err instanceof Error ? err.message : 'PDF parse error');
-  }
-
-  const text = data.text ?? '';
   const hasConfig = !!aiConfig && (aiConfig.apiKey ?? '').trim().length > 10;
+  let text = '';
+
+  try {
+    const data = await pdf(buffer);
+    text = data.text ?? '';
+  } catch (err) {
+    console.error('[pdf] pdf-parse failed, attempting vision fallback:', err);
+    if (!hasConfig || !aiConfig) {
+      throw new ParseError('invalid_pdf_format', err instanceof Error ? err.message : 'PDF parse error');
+    }
+    const visionDoc = await parseScannedPdf(buffer, kind, aiConfig);
+    if (!hasUsableContent(visionDoc)) {
+      throw new ParseError('vision_extraction_failed', 'Could not extract line items from this PDF.');
+    }
+    return visionDoc;
+  }
 
   const textDoc = parseDocumentText(text, kind);
   const textHasLines = textDoc.lines.length > 0;

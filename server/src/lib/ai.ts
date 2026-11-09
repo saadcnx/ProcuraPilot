@@ -46,7 +46,18 @@ export function aiConfigFromRules(r: {
   const apiKey = (r.apiKey ?? '').trim();
   if (!apiKey) return null;
   const provider = normalizeProvider(r.aiProvider);
-  const model = (r.aiModel ?? '').trim() || defaultModelFor(provider);
+  let model = (r.aiModel ?? '').trim();
+  
+  if (!model) {
+    model = defaultModelFor(provider);
+  } else if (provider === 'google' && !model.includes('gemini')) {
+    model = 'gemini-1.5-flash';
+  } else if (provider === 'anthropic' && !model.includes('claude')) {
+    model = 'claude-3-5-sonnet-latest';
+  } else if (provider === 'openai' && (model.includes('claude') || model.includes('gemini'))) {
+    model = 'gpt-4o-mini';
+  }
+
   const baseUrl = (r.aiBaseUrl ?? '').trim() || undefined;
   return { provider, apiKey, model, baseUrl };
 }
@@ -133,7 +144,7 @@ async function callGoogle(config: AiConfig, parts: AiPart[]): Promise<string> {
   const payloadParts = parts.map((p) =>
     p.type === 'text'
       ? { text: p.text }
-      : { inline_data: { mime_type: p.mimeType, data: p.dataBase64 } }
+      : { inlineData: { mimeType: p.mimeType, data: p.dataBase64 } }
   );
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:generateContent?key=${encodeURIComponent(config.apiKey)}`;
   let res: Response;

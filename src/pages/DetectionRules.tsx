@@ -153,9 +153,13 @@ export function DetectionRulesPage() {
               <span className="mb-1 block text-xs text-ink-variant">Provider</span>
               <select
                 value={draft.aiProvider}
-                onChange={(e) =>
-                  update('aiProvider', e.target.value as RulesDraft['aiProvider'])
-                }
+                onChange={(e) => {
+                  const p = e.target.value as RulesDraft['aiProvider'];
+                  update('aiProvider', p);
+                  if (p === 'openai') update('aiModel', 'gpt-4o-mini');
+                  else if (p === 'anthropic') update('aiModel', 'claude-3-5-sonnet-latest');
+                  else if (p === 'google') update('aiModel', 'gemini-1.5-flash');
+                }}
                 disabled={!canEdit}
                 className="h-14 w-full rounded-[4px] border border-outline bg-transparent px-4 text-base text-ink outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
