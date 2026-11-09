@@ -1,0 +1,105 @@
+{
+  "v": 2,
+  "id": "zc_mw94pe08_pbfn",
+  "sid": "s_mw92f7t9_cvta",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794220743382,
+  "sha": "f3895037a8bfca3868abfc190148724fcb8187e3",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 9 file(s) across 1 prompt turn(s)",
+  "msgHash": "a922b37f1a3e33ae",
+  "files": [
+    [
+      "server/migrations/005_add_ai_provider.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/ai.ts",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/pdf.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/engine/types.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "shared/types.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/rules.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 9,
+    "add": 2,
+    "mod": 7,
+    "del": 0,
+    "src": {
+      "ai": 9
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 8333,
+  "hash": "7ca1883630535b2a"
+}
