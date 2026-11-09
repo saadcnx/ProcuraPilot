@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mw8o59ni_sx0x",
+  "sid": "s_mw8n8p22_kjm5",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794192930836,
+  "sha": "69b2bb1585c056c5c20740b4c8f1cc4026506b5c",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "src/components/DecisionPanel.tsx",
+      "m",
+      "ps",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ps": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 4,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5952,
+  "hash": "7cfabab9c6c3b27e"
+}
