@@ -1,21 +1,22 @@
-FROM node:20-alpine AS build
-RUN apk add --no-cache --virtual .build-deps cairo-dev jpeg-dev pango-dev giflib-dev librsvg-dev python3 make g++ pkgconfig
+FROM node:20-bookworm-slim AS build
 WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 RUN npm install
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
-FROM node:20-alpine
-RUN apk add --no-cache cairo jpeg pango giflib librsvg pixman
+FROM node:20-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libjpeg62-turbo libgif7 librsvg2-2 \
+    && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
-RUN apk add --no-cache --virtual .build-deps cairo-dev jpeg-dev pango-dev giflib-dev librsvg-dev python3 make g++ pkgconfig \
-    && npm install --omit=dev \
-    && apk del .build-deps \
-    && npm cache clean --force
+RUN npm install --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY migrations ./migrations
 EXPOSE 3001
