@@ -1,0 +1,98 @@
+{
+  "v": 2,
+  "id": "zc_mw92f7tb_l0zu",
+  "sid": "s_mw92f7t9_cvta",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794216908938,
+  "sha": "942e077ad2fff73cc0e6e14004babeeff6ee22c1",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 8 file(s) across 1 prompt turn(s)",
+  "msgHash": "88abc0681a3e33ae",
+  "files": [
+    [
+      "nginx.conf",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "docker-compose.yml",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/migrations/004_add_vendors.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/middleware/errorHandler.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/FileDropSlot.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/pdf.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 8,
+    "add": 1,
+    "mod": 7,
+    "del": 0,
+    "src": {
+      "ai": 8
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 8519,
+  "hash": "4cb8f48a9ca9fb81"
+}
