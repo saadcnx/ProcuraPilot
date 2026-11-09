@@ -1,17 +1,13 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
+COPY src/package.json ./src/
 RUN npm install
-COPY tsconfig.json ./
-COPY src ./src
+COPY . .
 RUN npm run build
 
-FROM node:20-alpine
-WORKDIR /app
-ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm install --omit=dev && npm cache clean --force
-COPY --from=build /app/dist ./dist
-COPY migrations ./migrations
-EXPOSE 3001
-CMD ["node", "dist/index.js"]
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
