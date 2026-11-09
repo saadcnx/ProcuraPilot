@@ -1,0 +1,112 @@
+{
+  "v": 2,
+  "id": "zc_mw9aouj2_0mp7",
+  "sid": "s_mw9aouis_0g4g",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794230795702,
+  "sha": "d4b2327236f40fd03d661d3c63586f51c50e2566",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 10 file(s) across 1 prompt turn(s)",
+  "msgHash": "422d7f1777fcad21",
+  "files": [
+    [
+      "server/migrations/008_add_department.sql",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/engine/types.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "shared/types.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/seed.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/data/invoices.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Queue.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/DecisionPanel.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 10,
+    "add": 1,
+    "mod": 9,
+    "del": 0,
+    "src": {
+      "ai": 10
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 9953,
+  "hash": "b71f68b9549b98b1"
+}
