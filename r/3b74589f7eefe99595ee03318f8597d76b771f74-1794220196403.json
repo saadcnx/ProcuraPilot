@@ -1,0 +1,70 @@
+{
+  "v": 2,
+  "id": "zc_mw94dnyi_oddw",
+  "sid": "s_mw92f7t9_cvta",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1794220196403,
+  "sha": "3b74589f7eefe99595ee03318f8597d76b771f74",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 4 file(s) across 1 prompt turn(s)",
+  "msgHash": "42511f1c05ee04ed",
+  "files": [
+    [
+      "server/src/lib/pdf.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/types/pdf-to-img.d.ts",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/Dockerfile",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/TEST-phase1.md",
+      "a",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 4,
+    "add": 2,
+    "mod": 2,
+    "del": 0,
+    "src": {
+      "ai": 4
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 7048,
+  "hash": "10bcc9f6e43b80e5"
+}
