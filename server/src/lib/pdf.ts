@@ -87,10 +87,10 @@ function detectBankAccount(text: string): string {
 function detectLines(lines: string[]): LineItem[] {
   const items: LineItem[] = [];
   for (const line of lines) {
-    const m = line.match(/^(.+?)\s{2,}(\d+(?:\.\d+)?)\s+(?:@\s*)?\$?([\d,]+\.\d{2})\s+(?:=?\s*\$?([\d,]+\.\d{2}))?$/);
+    const m = line.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s+(?:@\s*)?\$?([\d,]+\.\d{2})\s+(?:=?\s*\$?([\d,]+\.\d{2}))?$/);
     if (!m) continue;
     const desc = m[1].trim();
-    if (desc.length < 2) continue;
+    if (desc.length < 2 || /^[0-9\s]+$/.test(desc)) continue;
     const qty = Number(m[2]);
     const unitPrice = Number(m[3].replace(/,/g, ''));
     if (!qty || !unitPrice || unitPrice < 0.01) continue;
