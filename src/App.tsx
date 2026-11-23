@@ -4,6 +4,7 @@ import { MotionConfig } from 'framer-motion';
 import { Toaster } from 'sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { RequireAuth } from './components/RequireAuth';
 import { Login } from './pages/Login';
 import { Queue } from './pages/Queue';
@@ -20,17 +21,19 @@ export function App() {
       <MotionConfig reducedMotion="user">
         <AuthProvider>
           <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route element={<RequireAuth />}>
-                <Route path="/queue" element={<Queue />} />
-                <Route path="/queue/:invoiceId" element={<Inspection />} />
-                <Route path="/audit" element={<AuditVault />} />
-                <Route path="/people" element={<People />} />
-                <Route path="/rules" element={<DetectionRulesPage />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/queue" replace />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route element={<RequireAuth />}>
+                  <Route path="/queue" element={<Queue />} />
+                  <Route path="/queue/:invoiceId" element={<Inspection />} />
+                  <Route path="/audit" element={<AuditVault />} />
+                  <Route path="/people" element={<People />} />
+                  <Route path="/rules" element={<DetectionRulesPage />} />
+                </Route>
+                <Route path="*" element={<Navigate to="/queue" replace />} />
+              </Routes>
+            </ErrorBoundary>
           </BrowserRouter>
           <Toaster
             position="bottom-center"
