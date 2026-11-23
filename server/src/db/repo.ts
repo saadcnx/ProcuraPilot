@@ -159,6 +159,15 @@ export async function getVendorAccount(vendorName: string): Promise<string> {
   return rows[0]?.bank_account ?? '';
 }
 
+export async function upsertVendorAccount(vendorName: string, bankAccount: string): Promise<void> {
+  if (!vendorName || !bankAccount) return;
+  await pool.query(
+    `INSERT INTO vendors (name, bank_account) VALUES ($1, $2)
+     ON CONFLICT (name) DO UPDATE SET bank_account = EXCLUDED.bank_account`,
+    [vendorName, bankAccount]
+  );
+}
+
 export async function decideCheck(
   id: string,
   decision: 'rejected' | 'force-approved',
@@ -167,7 +176,8 @@ export async function decideCheck(
   variance: number,
   flagCount: number,
   invoiceNumber: string,
-  vendor: string
+  vendor: string,
+  bankAccount: string
 ): Promise<boolean> {
   const client = await pool.connect();
   try {
@@ -185,6 +195,11 @@ export async function decideCheck(
     );
     if (decision === 'force-approved') {
       await client.query('UPDATE users SET force_approvals = force_approvals + 1 WHERE id = $1', [actor.id]);
+      await upsertVendorAccount(vendor, bankAccount);
+    } else if (decision === 'rejected') {
+      // don't update vendor bank account on reject
+    } else {
+      await upsertVendorAccount(vendor, bankAccount);
     }
     await client.query('COMMIT');
     return true;

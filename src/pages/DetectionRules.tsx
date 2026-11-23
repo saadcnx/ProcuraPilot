@@ -70,8 +70,11 @@ export function DetectionRulesPage() {
     setTestingKey(true);
     try {
       const res = await api.testAiKey();
-      if (res.ok) toast.success('Connection successful! AI key is working.');
-      else toast.error(`Connection failed: ${res.error}`);
+      if (res.ok) {
+        toast.success('Connection successful! AI key is working.');
+      } else {
+        toast.error(`AI offline: ${res.error}. You may need to use manual entry.`, { duration: 6000 });
+      }
     } catch (err: any) {
       toast.error(err.message || 'Failed to test key.');
     } finally {

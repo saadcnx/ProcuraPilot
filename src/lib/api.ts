@@ -59,6 +59,8 @@ export const api = {
 
   getCheck: (id: string) => apiFetch<CheckDetail>(`/api/checks/${id}`),
 
+  manualCheck: (data: any) => apiFetch<CheckDetail>('/api/checks/manual', { method: 'POST', body: JSON.stringify(data) }),
+
   uploadCheck: (po: File, invoice: File) => {
     const fd = new FormData();
     fd.append('po_file', po);

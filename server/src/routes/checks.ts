@@ -7,7 +7,7 @@ import { parsePdf, ParsedDoc, ParseError } from '../lib/pdf';
 import { aiConfigFromRules, AiError } from '../lib/ai';
 import { compareInvoice } from '../engine/compare';
 import { Invoice } from '../engine/types';
-import { loadChecks, loadCheck, insertCheck, loadRules, logAiUsage, getVendorAccount, decideCheck } from '../db/repo';
+import { loadChecks, loadCheck, insertCheck, loadRules, logAiUsage, getVendorAccount, decideCheck, upsertVendorAccount } from '../db/repo';
 import { pool } from '../db/pool';
 
 const router = Router();
@@ -95,6 +95,7 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
     if (result.isClean) invoice.status = 'approved';
     await insertCheck(invoice, req.user!.id);
     if (result.isClean) {
+      await upsertVendorAccount(invoice.vendor, invoice.bankAccount);
       await pool.query(
         `INSERT INTO audit_log (id, check_id, invoice_number, vendor, variance, flag_count, decision, actor_id, actor_name, actor_role)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
@@ -146,13 +147,73 @@ router.post('/:id/decide', requireAuth, requireSigner, async (req, res) => {
     result.variance,
     result.flags.length,
     invoice.invoiceNumber,
-    invoice.vendor
+    invoice.vendor,
+    invoice.bankAccount
   );
   if (!decided) {
     res.status(409).json({ error: 'already_decided' });
     return;
   }
   res.json({ ok: true, invoice: { ...invoice, status: newStatus }, result });
+});
+
+const manualLineSchema = z.object({
+  sku: z.string().min(1),
+  description: z.string().min(1),
+  qty: z.number().min(0),
+  unitPrice: z.number().min(0),
+});
+
+const manualSchema = z.object({
+  vendor: z.string().min(1),
+  poNumber: z.string().min(1),
+  invoiceNumber: z.string().min(1),
+  bankAccount: z.string().default(''),
+  taxRate: z.number().min(0).default(0),
+  invoiceTaxCharged: z.number().min(0).default(0),
+  poLines: z.array(manualLineSchema),
+  invoiceLines: z.array(manualLineSchema),
+});
+
+router.post('/manual', requireAuth, async (req, res) => {
+  const parsed = manualSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'invalid_body', details: parsed.error });
+    return;
+  }
+  const rules = await loadRules();
+  const data = parsed.data;
+  const bankOnFile = (await getVendorAccount(data.vendor)) || data.bankAccount;
+
+  const invoice: Invoice = {
+    id: `check-${randomUUID().slice(0, 8)}`,
+    vendor: data.vendor,
+    poNumber: data.poNumber,
+    invoiceNumber: data.invoiceNumber,
+    receivedAt: new Date().toISOString(),
+    poLines: data.poLines,
+    invoiceLines: data.invoiceLines,
+    taxRate: data.taxRate,
+    invoiceTaxCharged: data.invoiceTaxCharged,
+    bankAccount: data.bankAccount,
+    bankOnFile,
+    status: 'held',
+    department: 'Unassigned',
+    extractionUncertain: true
+  };
+
+  const result = compareInvoice(invoice, rules);
+  if (result.isClean) invoice.status = 'approved';
+  await insertCheck(invoice, req.user!.id);
+  if (result.isClean) {
+    await upsertVendorAccount(invoice.vendor, invoice.bankAccount);
+    await pool.query(
+      `INSERT INTO audit_log (id, check_id, invoice_number, vendor, variance, flag_count, decision, actor_id, actor_name, actor_role)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [`audit-${randomUUID().slice(0, 8)}`, invoice.id, invoice.invoiceNumber, invoice.vendor, result.variance, 0, 'approved', null, 'Manual-entry', 'system']
+    );
+  }
+  res.status(201).json({ invoice, result });
 });
 
 export default router;

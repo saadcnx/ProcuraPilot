@@ -42,9 +42,20 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
     return;
   }
   const email = parsed.data.email.trim().toLowerCase();
-  const existing = await pool.query('SELECT 1 FROM users WHERE lower(email) = $1', [email]);
+  const existing = await pool.query<{ id: string, active: boolean }>('SELECT id, active FROM users WHERE lower(email) = $1', [email]);
   if (existing.rowCount && existing.rowCount > 0) {
-    res.status(409).json({ error: 'email_in_use' });
+    const user = existing.rows[0];
+    if (user.active) {
+      res.status(409).json({ error: 'email_in_use' });
+      return;
+    }
+    const passwordToUse = parsed.data.password || randomBytes(24).toString('base64url');
+    const passwordHash = await bcrypt.hash(passwordToUse, env.BCRYPT_ROUNDS);
+    const { rows } = await pool.query<UserRow>(
+      `UPDATE users SET name=$2, password_hash=$3, role=$4, active=true, force_approvals=0 WHERE id=$1 RETURNING id, name, email, role, active, force_approvals`,
+      [user.id, parsed.data.name.trim(), passwordHash, parsed.data.role]
+    );
+    res.status(200).json({ user: mapUser(rows[0]), tempPassword: parsed.data.password ? undefined : passwordToUse });
     return;
   }
   // Admin can provide a custom password, or we generate a secure fallback.

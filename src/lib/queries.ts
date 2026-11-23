@@ -84,6 +84,17 @@ export function useResetUserPassword() {
   });
 }
 
+export function useManualCheck() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => api.manualCheck(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['checks'] });
+      qc.invalidateQueries({ queryKey: ['audit'] });
+    }
+  });
+}
+
 export function useRules() {
   return useQuery({ queryKey: ['rules'], queryFn: api.getRules });
 }

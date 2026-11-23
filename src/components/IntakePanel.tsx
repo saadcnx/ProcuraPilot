@@ -8,12 +8,14 @@ import { formatSignedCurrency } from '../utils/currency';
 import { issueSummary } from '../utils/issueSummary';
 import { Button } from './Button';
 import { FileDropSlot } from './FileDropSlot';
+import { ManualEntryDialog } from './ManualEntryDialog';
 
 export function IntakePanel() {
   const uploadMutation = useUploadCheck();
   const [poFile, setPoFile] = useState<File | null>(null);
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
   const [last, setLast] = useState<CheckDetail | null>(null);
+  const [manualOpen, setManualOpen] = useState(false);
 
   const reading = uploadMutation.isPending;
 
@@ -50,9 +52,9 @@ export function IntakePanel() {
         } else if (err.code === 'invalid_pdf_format') {
           toast.error('Could not read the PDF format. Please ensure they are valid PDFs.');
         } else if (err.code === 'api_key_required_for_scanned_pdf') {
-          toast.error('This looks like a scanned PDF. Add an AI key in Detection Rules, then retry.');
+          toast.error('Scanned PDF requires an AI key. Configure it in Rules, or use Manual Entry.');
         } else if (err.code === 'vision_extraction_failed') {
-          toast.error('Could not extract data from the scanned PDF. Upload a clearer scan and try again.');
+          toast.error('AI could not read this PDF. Try a clearer scan or use Manual Entry.');
         } else if (err.code === 'vision_dependency_missing') {
           toast.error('Server is missing the vision dependency. Run npm install in server/.');
         } else if (err.code === 'pdf_too_large') {
@@ -95,15 +97,19 @@ export function IntakePanel() {
         />
       </div>
 
-      <Button
-        className="mt-5"
-        fullWidth
-        disabled={!poFile || !invoiceFile}
-        loading={reading}
-        onClick={handleRun}
-      >
-        {reading ? 'Reading documents…' : 'Run match'}
-      </Button>
+      <div className="mt-5 flex gap-2">
+        <Button
+          className="flex-1"
+          disabled={!poFile || !invoiceFile}
+          loading={reading}
+          onClick={handleRun}
+        >
+          {reading ? 'Reading documents...' : 'Run match'}
+        </Button>
+        <Button variant="outlined" onClick={() => setManualOpen(true)}>
+          Manual
+        </Button>
+      </div>
 
       <div aria-live="polite">
         {last && !last.result.isClean && (
@@ -130,6 +136,7 @@ export function IntakePanel() {
           </div>
         )}
       </div>
+      <ManualEntryDialog open={manualOpen} onClose={() => setManualOpen(false)} />
     </section>
   );
 }
