@@ -21,11 +21,13 @@
 
 ### T2 — Scanned PDF without key
 - Steps: Rules → clear AI key → Save. Upload scanned PO + scanned invoice
+- Assumes: input is a real PDF (has `%PDF-` magic bytes) with no text layer. Corrupt files are T6 and never reach this code path.
 - Expected toast: "This looks like a scanned PDF. Add an AI key in Detection Rules..."
 - Backend: `422 { error: "api_key_required_for_scanned_pdf" }`
 
 ### T3 — Scanned PDF with key (happy path)
 - Steps: Rules → valid key → Save. Upload scanned PO + scanned invoice → Run match
+- Assumes: input is a real scanned PDF (valid magic bytes, no text layer), not a corrupt file.
 - Expected: invoice appears in queue, line items visible on detail page, numbers sane
 - Backend: `POST https://api.openai.com/v1/chat/completions` in log, `201 Created`
 
@@ -39,6 +41,7 @@
 
 ### T6 — Corrupt file
 - Steps: upload `.txt` renamed to `.pdf`
+- Note: `parsePdf()` performs a magic-byte check (`%PDF-` header). Non-PDF buffers are rejected with `invalid_pdf_format` **before** the vision fallback runs, regardless of whether an AI key is configured.
 - Expected: `422 { error: "invalid_pdf_format" }`, toast "Could not read the PDF format..."
 
 ### T7 — Vision failure (bad key)

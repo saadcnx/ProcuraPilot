@@ -29,7 +29,6 @@ export default {
         secondary: '#84A282',
         'secondary-container': '#DDE8D9',
         'on-secondary-container': '#1E2E1D',
-        'tertiary-container': '#F6E2E9',
         'on-tertiary-container': '#5C2238',
         error: '#A3324F',
         'error-hover': '#8C2943',

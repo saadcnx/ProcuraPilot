@@ -33,3 +33,11 @@ docker compose up -d --build
 ```
 
 Frontend on :8080, backend on :3001. Set `NODE_ENV=production` and rotate `JWT_SECRET` and `SECRET_BOX_KEY` before first boot. Keep `.env` out of source control.
+
+## Seed data (demo only)
+
+`npm run db:seed` refuses to run when `NODE_ENV=production`. For a demo or staging instance, force development mode explicitly:
+
+```bash
+cd server
+NODE_ENV=development npm run db:seed
