@@ -76,6 +76,14 @@ export function usePatchUser() {
   });
 }
 
+export function useResetUserPassword() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.resetUserPassword(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] })
+  });
+}
+
 export function useRules() {
   return useQuery({ queryKey: ['rules'], queryFn: api.getRules });
 }

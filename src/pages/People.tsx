@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { UserPlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
-import { usePatchUser, useUsers } from '../lib/queries';
+import { usePatchUser, useUsers, useResetUserPassword } from '../lib/queries';
 import { AddUserDialog } from '../components/AddUserDialog';
 import { Button } from '../components/Button';
 import { Chip } from '../components/Chip';
@@ -15,8 +15,11 @@ export function People() {
   const { data, isLoading, error } = useUsers();
   const { user: currentUser } = useAuth();
   const patchMutation = usePatchUser();
+  const resetMutation = useResetUserPassword();
   const [adding, setAdding] = useState(false);
   const [revoking, setRevoking] = useState<TeamUser | null>(null);
+  const [resetting, setResetting] = useState<TeamUser | null>(null);
+  const [resetResult, setResetResult] = useState<{ email: string; password: string } | null>(null);
   const canManage = currentUser?.role === 'boss';
   const users = data?.users ?? [];
 
@@ -53,6 +56,17 @@ export function People() {
     );
   };
 
+  const confirmReset = () => {
+    if (!resetting) return;
+    const target = resetting;
+    resetMutation.mutate(target.id, {
+      onSuccess: (data) => {
+        setResetResult({ email: target.email, password: data.tempPassword });
+      },
+      onError: () => toast.error('Could not reset password.'),
+    });
+  };
+
   return (
     <div className="mx-auto max-w-[1280px]">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -79,7 +93,7 @@ export function People() {
         <div
           className={`hidden gap-x-4 border-b border-outline-variant px-5 py-3 text-xs font-medium text-ink-variant md:grid ${
             canManage
-              ? 'md:grid-cols-[minmax(0,1fr)_200px_140px_150px]'
+              ? 'md:grid-cols-[minmax(0,1fr)_160px_120px_260px]'
               : 'md:grid-cols-[minmax(0,1fr)_200px_140px]'
           }`}
         >
@@ -100,7 +114,7 @@ export function People() {
                   key={user.id}
                   className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-5 py-4 ${
                     canManage
-                      ? 'md:grid-cols-[minmax(0,1fr)_200px_140px_150px]'
+                      ? 'md:grid-cols-[minmax(0,1fr)_160px_120px_260px]'
                       : 'md:grid-cols-[minmax(0,1fr)_200px_140px]'
                   } ${user.active ? '' : 'opacity-60'}`}
                 >
@@ -149,7 +163,13 @@ export function People() {
                   </div>
 
                   {canManage && (
-                    <div className="col-span-2 flex justify-end md:col-span-1">
+                    <div className="col-span-2 flex flex-wrap justify-end gap-2 md:col-span-1">
+                      <Button
+                        variant="text"
+                        onClick={() => setResetting(user)}
+                      >
+                        Reset password
+                      </Button>
                       {user.active ? (
                         <Button
                           variant="text"
@@ -204,6 +224,47 @@ export function People() {
           </>
         }
       />
+      <Dialog
+        open={resetting !== null}
+        onClose={() => {
+          setResetting(null);
+          setResetResult(null);
+        }}
+        title={resetResult ? 'Password reset' : 'Reset password?'}
+        description={
+          resetResult ? (
+            <p>Share this temporary password with {resetResult.email}. It will not be shown again.</p>
+          ) : (
+            <p>This will generate a new temporary password for {resetting?.name}. Their current password will stop working immediately.</p>
+          )
+        }
+        actions={
+          resetResult ? (
+            <Button onClick={() => { setResetting(null); setResetResult(null); }}>Done</Button>
+          ) : (
+            <>
+              <Button variant="text" onClick={() => setResetting(null)}>Cancel</Button>
+              <Button loading={resetMutation.isPending} onClick={confirmReset}>Reset password</Button>
+            </>
+          )
+        }
+      >
+        {resetResult && (
+          <div className="space-y-4">
+            <div>
+              <p className="mb-1 text-xs text-ink-variant">Temporary password</p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 break-all rounded bg-surface-container px-3 py-2 font-mono text-sm text-ink">
+                  {resetResult.password}
+                </code>
+                <Button variant="outlined" onClick={() => { navigator.clipboard.writeText(resetResult.password); toast.success('Copied'); }}>
+                  Copy
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </Dialog>
     </div>
   );
 }

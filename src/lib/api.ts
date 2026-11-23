@@ -88,6 +88,11 @@ export const api = {
       body: JSON.stringify({ active })
     }),
 
+  resetUserPassword: (id: string) =>
+    apiFetch<{ user: TeamUser; tempPassword: string }>(`/api/users/${id}/reset-password`, {
+      method: 'POST'
+    }),
+
   getRules: () => apiFetch<{ rules: DetectionRules }>('/api/rules'),
 
   testAiKey: () => apiFetch<{ ok: boolean; error?: string }>('/api/rules/test-key'),

@@ -59,6 +59,20 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
   res.status(201).json({ user: mapUser(rows[0]), tempPassword });
 });
 
+router.post('/:id/reset-password', requireAuth, requireSigner, async (req, res) => {
+  const tempPassword = randomBytes(24).toString('base64url');
+  const passwordHash = await bcrypt.hash(tempPassword, env.BCRYPT_ROUNDS);
+  const { rows } = await pool.query<UserRow>(
+    `UPDATE users SET password_hash = $2 WHERE id = $1 RETURNING id, name, email, role, active, force_approvals`,
+    [req.params.id, passwordHash]
+  );
+  if (rows.length === 0) {
+    res.status(404).json({ error: 'not_found' });
+    return;
+  }
+  res.json({ user: mapUser(rows[0]), tempPassword });
+});
+
 const patchSchema = z.object({ active: z.boolean() });
 
 router.patch('/:id', requireAuth, requireSigner, async (req, res) => {
