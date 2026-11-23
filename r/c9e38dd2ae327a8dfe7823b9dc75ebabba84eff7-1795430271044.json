@@ -1,0 +1,105 @@
+{
+  "v": 2,
+  "id": "zc_mwt4triu_f073",
+  "sid": "s_mwt3u5lo_5l22",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795430271044,
+  "sha": "c9e38dd2ae327a8dfe7823b9dc75ebabba84eff7",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 9 file(s) across 2 prompt turn(s)",
+  "msgHash": "283eab441a3e33ae",
+  "files": [
+    [
+      "src/components/Button.tsx",
+      "m",
+      "ai",
+      2,
+      0
+    ],
+    [
+      "src/components/Dialog.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/AppShell.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Login.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Queue.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/People.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/AuditVault.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 9,
+    "add": 0,
+    "mod": 9,
+    "del": 0,
+    "src": {
+      "ai": 9
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 7418,
+  "hash": "71d1ef626672defc"
+}
