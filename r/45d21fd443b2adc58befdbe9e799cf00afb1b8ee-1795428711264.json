@@ -1,0 +1,154 @@
+{
+  "v": 2,
+  "id": "zc_mwt3wc0i_okec",
+  "sid": "s_mwt3u5lo_5l22",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795428711264,
+  "sha": "45d21fd443b2adc58befdbe9e799cf00afb1b8ee",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 16 file(s) across 1 prompt turn(s)",
+  "msgHash": "b78898a177fcad21",
+  "files": [
+    [
+      "src/App.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "index.html",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "vite.config.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/DecisionPanel.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Queue.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/env.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/lib/secretBox.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/db/pool.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/AddUserDialog.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "docker-compose.yml",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "README.md",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 16,
+    "add": 0,
+    "mod": 16,
+    "del": 0,
+    "src": {
+      "ai": 16
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 10009,
+  "hash": "b572061e3a292854"
+}
