@@ -1,18 +1,23 @@
 import React from 'react';
 
-const LOGO_URL = 'https://wander-pocket-s2h8.here.now/ProcuraPilot.png';
-
 export function BrandMark() {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-[#E8E8E8]">
-        <img
-          src={LOGO_URL}
-          alt=""
-          className="absolute left-1/2 top-0 h-14 max-w-none -translate-x-1/2" />
+      <svg viewBox="0 0 32 32" className="h-10 w-10 shrink-0 fill-primary" aria-hidden="true">
+        <path d="M7 3h12l6 6v20H7z" />
+        <path d="M19 3l6 6h-6z" className="fill-surface" />
+        <path
+          d="M11.5 18.5l3.5 3.5 6-7"
+          className="stroke-surface"
+          fill="none"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round" />
         
-      </div>
-      <span className="text-lg font-medium tracking-tight text-ink">ProcuraPilot</span>
+      </svg>
+      <span className="text-lg font-medium tracking-tight text-ink">
+        Procura<span className="font-bold text-primary">Pilot</span>
+      </span>
     </div>);
 
 }
