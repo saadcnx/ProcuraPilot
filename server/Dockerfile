@@ -14,10 +14,12 @@ WORKDIR /app
 ENV NODE_ENV=production
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libjpeg62-turbo libgif7 librsvg2-2 \
+    python3 python3-psycopg2 \
     && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY migrations ./migrations
+COPY scripts ./scripts
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
