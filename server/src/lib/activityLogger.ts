@@ -1,3 +1,5 @@
+
+```typescript
 import { pool } from '../db/pool';
 
 export interface ActivityLog {
