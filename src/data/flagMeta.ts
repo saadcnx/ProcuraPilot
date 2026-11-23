@@ -2,9 +2,9 @@ import { GhostIcon, LandmarkIcon, LucideIcon, PackageIcon, ReceiptIcon, TagIcon 
 import { FlagKind } from '../../shared/types';
 
 export const flagMeta: Record<FlagKind, {label: string;icon: LucideIcon;}> = {
-  price: { label: 'Price raised', icon: TagIcon },
-  quantity: { label: 'Over-billed quantity', icon: PackageIcon },
-  ghost: { label: 'Ghost item', icon: GhostIcon },
-  tax: { label: 'Tax miscalculated', icon: ReceiptIcon },
-  bank: { label: 'Bank account changed', icon: LandmarkIcon }
+  price: { label: 'Price Increased', icon: TagIcon },
+  quantity: { label: 'Billed Too Many', icon: PackageIcon },
+  ghost: { label: 'Item Not Ordered', icon: GhostIcon },
+  tax: { label: 'Wrong Tax Amount', icon: ReceiptIcon },
+  bank: { label: 'Bank Account Changed', icon: LandmarkIcon }
 };

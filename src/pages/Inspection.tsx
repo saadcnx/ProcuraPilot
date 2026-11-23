@@ -19,16 +19,16 @@ export function Inspection() {
       className="-ml-3 inline-flex h-10 items-center gap-2 rounded-full pl-3 pr-4 text-sm font-medium text-primary transition-colors duration-150 ease-out hover:bg-primary/[0.08]"
     >
       <ArrowLeftIcon className="h-[18px] w-[18px]" aria-hidden="true" />
-      Queue
+      Back to Queue
     </Link>
   );
 
   if (checkError || rulesError) {
     return (
-      <div className="mx-auto max-w-[1280px]">
+      <div className="mx-auto max-w-[1280px] p-6">
         {backLink}
-        <div className="py-16 text-center text-sm text-ink-variant">
-          Could not load invoice. Refresh the page.
+        <div className="py-16 text-center text-sm text-error font-medium">
+          Could not load this invoice. Please refresh the page.
         </div>
       </div>
     );
@@ -36,9 +36,9 @@ export function Inspection() {
 
   if (isLoading || rulesLoading || !rules) {
     return (
-      <div className="mx-auto max-w-[1280px]">
+      <div className="mx-auto max-w-[1280px] p-6">
         {backLink}
-        <div className="py-16 text-center text-sm text-ink-variant">Loading invoice…</div>
+        <div className="py-16 text-center text-sm text-ink-variant animate-pulse">Loading invoice details...</div>
       </div>
     );
   }
@@ -48,13 +48,13 @@ export function Inspection() {
 
   if (!invoice || !result) {
     return (
-      <div className="mx-auto max-w-[1280px]">
+      <div className="mx-auto max-w-[1280px] p-6">
         {backLink}
         <div className="mt-16 flex flex-col items-center text-center">
-          <SearchXIcon className="h-8 w-8 text-ink-variant" aria-hidden="true" />
-          <h1 className="mt-4 text-xl text-ink">Invoice not found</h1>
+          <SearchXIcon className="h-10 w-10 text-ink-variant" aria-hidden="true" />
+          <h1 className="mt-4 text-xl font-medium text-ink">Invoice not found</h1>
           <p className="mt-2 max-w-sm text-sm text-ink-variant">
-            It may have been removed from the queue. Head back to see what's still held.
+            It may have been removed from the queue or already decided.
           </p>
         </div>
       </div>
@@ -63,13 +63,13 @@ export function Inspection() {
 
   if (invoice.status !== 'held') {
     return (
-      <div className="mx-auto max-w-[1280px]">
+      <div className="mx-auto max-w-[1280px] p-6">
         {backLink}
         <div className="mt-16 flex flex-col items-center text-center">
-          <SearchXIcon className="h-8 w-8 text-ink-variant" aria-hidden="true" />
-          <h1 className="mt-4 text-xl text-ink">This bill has already been decided</h1>
+          <SearchXIcon className="h-10 w-10 text-ink-variant" aria-hidden="true" />
+          <h1 className="mt-4 text-xl font-medium text-ink">Already decided</h1>
           <p className="mt-2 max-w-sm text-sm text-ink-variant">
-            Its decision is recorded in the audit vault.
+            The decision for this invoice is recorded in the Audit Vault.
           </p>
         </div>
       </div>
@@ -78,109 +78,75 @@ export function Inspection() {
 
   const frozen = rules.bankCheck && result.bankMismatch;
   const escalated = Math.abs(result.variance) >= rules.panicThreshold;
-  const over = result.variance >= 0;
+  const isOvercharged = result.variance > 0;
 
   return (
-    <div className="mx-auto max-w-[1280px]">
+    <div className="mx-auto max-w-[1280px] p-6">
       {backLink}
 
-      <header className="mt-3">
-        <h1 className="text-2xl leading-8 text-ink">{invoice.vendor}</h1>
+      <header className="mt-4 mb-8">
+        <h1 className="text-2xl font-medium text-ink">{invoice.vendor}</h1>
         <p className="mt-1 text-sm text-ink-variant">
-          Invoice {invoice.invoiceNumber} · {invoice.poNumber} · <span className="font-medium text-primary">{invoice.department}</span> · Received{' '}
-          {format(new Date(invoice.receivedAt), 'MMM d, yyyy, h:mm a')}
+          Invoice #{invoice.invoiceNumber} · PO #{invoice.poNumber} · {format(new Date(invoice.receivedAt), 'MMM d, yyyy')}
         </p>
       </header>
 
       {invoice.extractionUncertain && (
-        <div className="mt-6 space-y-2">
-          <div role="status" className="flex gap-3 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container">
-            <TriangleAlertIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-            <p>
-              <span className="font-medium">Low extraction confidence.</span> The AI had trouble reading this document. Double-check all line items and totals manually.
-            </p>
-          </div>
+        <div className="mb-6 flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+          <TriangleAlertIcon className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+          <p>
+            <span className="font-bold">Warning:</span> The system had trouble reading this document. Double-check all numbers manually.
+          </p>
         </div>
       )}
 
       {(frozen || escalated) && (
-        <div className="mt-6 space-y-2">
+        <div className="mb-6 space-y-3">
           {frozen && (
-            <div
-              role="status"
-              className="flex gap-3 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container"
-            >
-              <LockIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              <p>
-                <span className="font-medium">Payment frozen.</span> This invoice pays to{' '}
-                {invoice.bankAccount}, but the account on file is {invoice.bankOnFile}. Confirm
-                with the vendor by phone before releasing.
-              </p>
+            <div className="flex gap-3 rounded-xl bg-error/10 px-5 py-4 text-sm text-error font-medium">
+              <LockIcon className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+              <p>Bank account on this invoice does not match the account we have on file. Payment is frozen.</p>
             </div>
           )}
           {escalated && (
-            <div
-              role="status"
-              className="flex gap-3 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container"
-            >
-              <SirenIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              <p>
-                <span className="font-medium">Escalated.</span> The gap exceeds{' '}
-                {formatCurrency(rules.panicThreshold)}, so {rules.panicEmail} was emailed
-                automatically.
-              </p>
+            <div className="flex gap-3 rounded-xl bg-error/10 px-5 py-4 text-sm text-error font-medium">
+              <SirenIcon className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+              <p>This error is very large. A manager has been alerted.</p>
             </div>
           )}
         </div>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <div className="min-w-0 space-y-6">
-          <section className="flex flex-wrap items-end gap-x-12 gap-y-5 rounded-xl border border-outline-variant bg-surface-container-lowest p-6">
-            <div>
-              <p className="text-sm text-ink-variant">
-                {over ? 'Billed over the order' : 'Billed under the order'}
-              </p>
-              <p className="mt-1 text-[45px] leading-[52px] tabular-nums text-ink">
-                {formatSignedCurrency(result.variance)}
-              </p>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+        <div className="space-y-8">
+          {/* Big Summary Card */}
+          <section className={`rounded-xl border p-8 ${isOvercharged ? 'border-error/30 bg-error/[0.02]' : 'border-primary/30 bg-primary/[0.02]'}`}>
+            <h2 className="text-sm font-medium uppercase tracking-wider text-ink-variant mb-6">The Bottom Line</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <p className="text-sm text-ink-variant mb-1">You agreed to pay</p>
+                <p className="text-2xl font-medium text-ink">{formatCurrency(result.poTotal)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-ink-variant mb-1">They are asking for</p>
+                <p className="text-2xl font-medium text-ink">{formatCurrency(result.invoiceTotal)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-ink-variant mb-1">Difference</p>
+                <p className={`text-3xl font-bold ${isOvercharged ? 'text-error' : 'text-primary'}`}>
+                  {formatSignedCurrency(result.variance)}
+                </p>
+              </div>
             </div>
-            <dl className="flex flex-wrap gap-x-10 gap-y-3 pb-1.5 text-sm">
-              <div>
-                <dt className="text-ink-variant">Purchase order</dt>
-                <dd className="mt-0.5 text-lg tabular-nums text-ink">
-                  {formatCurrency(result.poTotal)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-ink-variant">Invoice</dt>
-                <dd className="mt-0.5 text-lg tabular-nums text-ink">
-                  {formatCurrency(result.invoiceTotal)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-ink-variant">Lines mismatched</dt>
-                <dd className="mt-0.5 text-lg tabular-nums text-ink">
-                  {result.mismatchedItems} of {result.rows.length}
-                </dd>
-              </div>
-            </dl>
+            <p className="mt-6 text-sm text-ink-variant">
+              {isOvercharged 
+                ? `This invoice asks for ${formatCurrency(result.variance)} more than the original order.` 
+                : `This invoice matches the original order or is cheaper.`}
+            </p>
           </section>
 
-          <section
-            aria-labelledby="compare-title"
-            className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest"
-          >
-            <div className="px-5 pb-2 pt-5">
-              <h2 id="compare-title" className="text-base font-medium text-ink">
-                Order vs bill
-              </h2>
-              <p className="mt-1 text-sm text-ink-variant">
-                Lines are flagged when the extra charge exceeds{' '}
-                {formatCurrency(rules.toleranceAmount)} or {rules.tolerancePercent}% of the line,
-                whichever is larger.
-              </p>
-            </div>
+          <section>
+            <h2 className="text-lg font-medium text-ink mb-4">Line-by-Line Comparison</h2>
             <ComparisonTable result={result} taxRate={invoice.taxRate} />
           </section>
         </div>
