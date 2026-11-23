@@ -19,9 +19,9 @@ router.get('/test-key', requireAuth, requireSigner, async (req, res) => {
     logActivity({
       action: 'TEST_AI_KEY',
       resource_type: 'rules',
-      actor_id: req.user.id,
-      actor_name: req.user.name,
-      actor_role: req.user.role,
+      actor_id: req.user!.id,
+      actor_name: req.user!.name,
+      actor_role: req.user!.role,
       details: { success: true }
     });
     res.json({ ok: true });
@@ -30,9 +30,9 @@ router.get('/test-key', requireAuth, requireSigner, async (req, res) => {
     logActivity({
       action: 'TEST_AI_KEY',
       resource_type: 'rules',
-      actor_id: req.user.id,
-      actor_name: req.user.name,
-      actor_role: req.user.role,
+      actor_id: req.user!.id,
+      actor_name: req.user!.name,
+      actor_role: req.user!.role,
       details: { success: false, error: msg }
     });
     res.json({ ok: false, error: msg });
@@ -85,9 +85,9 @@ router.put('/', requireAuth, requireSigner, async (req, res) => {
     action: 'UPDATE_RULES',
     resource_type: 'rules',
     resource_id: '1',
-    actor_id: req.user.id,
-    actor_name: req.user.name,
-    actor_role: req.user.role,
+    actor_id: req.user!.id,
+    actor_name: req.user!.name,
+    actor_role: req.user!.role,
     details: { 
       toleranceAmount: parsed.data.toleranceAmount, 
       bankCheck: parsed.data.bankCheck, 

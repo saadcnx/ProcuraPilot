@@ -61,9 +61,9 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
       action: 'REACTIVATE_USER',
       resource_type: 'user',
       resource_id: newUser.id,
-      actor_id: req.user.id,
-      actor_name: req.user.name,
-      actor_role: req.user.role,
+      actor_id: req.user!.id,
+      actor_name: req.user!.name,
+      actor_role: req.user!.role,
       details: { email, role: parsed.data.role }
     });
     res.status(200).json({ user: newUser, tempPassword: parsed.data.password ? undefined : passwordToUse });
@@ -84,9 +84,9 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
     action: 'INVITE_USER',
     resource_type: 'user',
     resource_id: newUser.id,
-    actor_id: req.user.id,
-    actor_name: req.user.name,
-    actor_role: req.user.role,
+    actor_id: req.user!.id,
+    actor_name: req.user!.name,
+    actor_role: req.user!.role,
     details: { email, role: parsed.data.role }
   });
   res.status(201).json({ user: newUser, tempPassword: parsed.data.password ? undefined : passwordToUse });
@@ -116,9 +116,9 @@ router.post('/:id/reset-password', requireAuth, requireSigner, async (req, res) 
     action: 'RESET_PASSWORD',
     resource_type: 'user',
     resource_id: req.params.id,
-    actor_id: req.user.id,
-    actor_name: req.user.name,
-    actor_role: req.user.role
+    actor_id: req.user!.id,
+    actor_name: req.user!.name,
+    actor_role: req.user!.role
   });
   res.json({ user: updatedUser });
 });
@@ -148,9 +148,9 @@ router.patch('/:id', requireAuth, requireSigner, async (req, res) => {
     action: 'UPDATE_USER_STATUS',
     resource_type: 'user',
     resource_id: req.params.id,
-    actor_id: req.user.id,
-    actor_name: req.user.name,
-    actor_role: req.user.role,
+    actor_id: req.user!.id,
+    actor_name: req.user!.name,
+    actor_role: req.user!.role,
     details: { active: parsed.data.active }
   });
   res.json({ user: updatedUser });
