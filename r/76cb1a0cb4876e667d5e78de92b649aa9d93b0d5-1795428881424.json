@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mwt3zza7_l9on",
+  "sid": "s_mwt3u5lo_5l22",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795428881424,
+  "sha": "76cb1a0cb4876e667d5e78de92b649aa9d93b0d5",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "server/src/lib/pdf.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ai": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5854,
+  "hash": "7b6768c5ef5160f4"
+}
