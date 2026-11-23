@@ -18,9 +18,12 @@ const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.use(helmet());
+const devOrigins = [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/];
 app.use(
   cors({
-    origin: env.CLIENT_ORIGIN,
+    origin: env.NODE_ENV === 'development'
+      ? [...devOrigins, env.CLIENT_ORIGIN]
+      : env.CLIENT_ORIGIN,
     credentials: false
   })
 );
