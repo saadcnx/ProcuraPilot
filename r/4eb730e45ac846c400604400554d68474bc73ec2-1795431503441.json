@@ -1,0 +1,77 @@
+{
+  "v": 2,
+  "id": "zc_mwt5k6fz_yulu",
+  "sid": "s_mwt55mhb_xq9g",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795431503441,
+  "sha": "4eb730e45ac846c400604400554d68474bc73ec2",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 5 file(s) across 1 prompt turn(s)",
+  "msgHash": "5dcea03305ee04ed",
+  "files": [
+    [
+      "server/src/routes/users.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/queries.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/AddUserDialog.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/People.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 5,
+    "add": 0,
+    "mod": 5,
+    "del": 0,
+    "src": {
+      "ai": 5
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 1,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 6470,
+  "hash": "edb3238e9e8c166d"
+}
