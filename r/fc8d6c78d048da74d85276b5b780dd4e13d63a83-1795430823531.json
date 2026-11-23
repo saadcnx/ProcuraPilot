@@ -1,0 +1,70 @@
+{
+  "v": 2,
+  "id": "zc_mwt55mhd_d0vs",
+  "sid": "s_mwt55mhb_xq9g",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795430823531,
+  "sha": "fc8d6c78d048da74d85276b5b780dd4e13d63a83",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 4 file(s) across 1 prompt turn(s)",
+  "msgHash": "42511f1c05ee04ed",
+  "files": [
+    [
+      "server/src/routes/users.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/queries.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/People.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 4,
+    "add": 0,
+    "mod": 4,
+    "del": 0,
+    "src": {
+      "ai": 4
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 1,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 7279,
+  "hash": "e95f0cdaad56d67a"
+}
