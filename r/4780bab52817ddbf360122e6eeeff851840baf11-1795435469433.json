@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mwt7x6oi_o329",
+  "sid": "s_mwt7x6o8_ak9z",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795435469433,
+  "sha": "4780bab52817ddbf360122e6eeeff851840baf11",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "server/package.json",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ai": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5923,
+  "hash": "d9c220b70e92523e"
+}
