@@ -45,6 +45,10 @@ function hasUsableContent(doc: ParsedDoc): boolean {
   return doc.lines.length > 0;
 }
 
+function looksLikePdf(buffer: Buffer): boolean {
+  return buffer.length >= 5 && buffer.slice(0, 5).toString('ascii') === '%PDF-';
+}
+
 function looksScanned(text: string): boolean {
   return text.trim().length < MIN_TEXT_LENGTH;
 }
@@ -66,6 +70,9 @@ export async function parsePdf(
     }
   } catch (err) {
     if (err instanceof ParseError) throw err;
+    if (!looksLikePdf(buffer)) {
+      throw new ParseError('invalid_pdf_format', 'File is not a valid PDF.');
+    }
     console.error('[pdf] pdf-parse failed, attempting vision fallback:', err);
     if (!hasConfig || !aiConfig) {
       throw new ParseError('invalid_pdf_format', err instanceof Error ? err.message : 'PDF parse error');
