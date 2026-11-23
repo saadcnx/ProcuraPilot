@@ -1,0 +1,105 @@
+{
+  "v": 2,
+  "id": "zc_mwt3u5lz_ia4i",
+  "sid": "s_mwt3u5lo_5l22",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795428609240,
+  "sha": "39655dfbaa675527ac9cef13f4aaaa95ed781679",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 9 file(s)",
+  "msgHash": "64b32da6ed5af204",
+  "files": [
+    [
+      ".env",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/package.json",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/utils/csv.ts",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/utils/compare.ts",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/contexts/ProcurementContext.tsx",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/data/auditLog.ts",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/data/invoices.ts",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/data/rules.ts",
+      "d",
+      "man",
+      1,
+      0
+    ],
+    [
+      "src/data/users.ts",
+      "d",
+      "man",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 9,
+    "add": 0,
+    "mod": 0,
+    "del": 9,
+    "src": {
+      "man": 9
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5084,
+  "hash": "94f74c95a3db9c77"
+}
