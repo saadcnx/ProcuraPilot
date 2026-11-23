@@ -43,6 +43,14 @@ router.get('/', requireAuth, async (_req, res) => {
   res.json({ entries: rows.map(mapEntry) });
 });
 
+router.get('/activity', requireAuth, async (_req, res) => {
+  const { rows } = await pool.query(`
+    SELECT id, "timestamp", action, resource_type, resource_id, actor_name, actor_role, details
+    FROM system_activity ORDER BY "timestamp" DESC LIMIT 500
+  `);
+  res.json({ activities: rows });
+});
+
 router.get('/export', requireAuth, async (_req, res) => {
   const { rows } = await pool.query<AuditRow>(
     `SELECT id, "timestamp", check_id, invoice_number, vendor, variance::text, flag_count, decision, actor_name, actor_role, reason

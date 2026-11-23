@@ -5,6 +5,7 @@ import { randomBytes, randomUUID } from 'crypto';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { pool } from '../db/pool';
 import { env } from '../env';
+import { logActivity } from '../lib/activityLogger';
 
 const router = Router();
 
@@ -55,7 +56,17 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
       `UPDATE users SET name=$2, password_hash=$3, role=$4, active=true, force_approvals=0 WHERE id=$1 RETURNING id, name, email, role, active, force_approvals`,
       [user.id, parsed.data.name.trim(), passwordHash, parsed.data.role]
     );
-    res.status(200).json({ user: mapUser(rows[0]), tempPassword: parsed.data.password ? undefined : passwordToUse });
+    const newUser = mapUser(rows[0]);
+    logActivity({
+      action: 'REACTIVATE_USER',
+      resource_type: 'user',
+      resource_id: newUser.id,
+      actor_id: req.user.id,
+      actor_name: req.user.name,
+      actor_role: req.user.role,
+      details: { email, role: parsed.data.role }
+    });
+    res.status(200).json({ user: newUser, tempPassword: parsed.data.password ? undefined : passwordToUse });
     return;
   }
   // Admin can provide a custom password, or we generate a secure fallback.
@@ -68,7 +79,17 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
      RETURNING id, name, email, role, active, force_approvals`,
     [id, parsed.data.name.trim(), email, passwordHash, parsed.data.role]
   );
-  res.status(201).json({ user: mapUser(rows[0]), tempPassword: parsed.data.password ? undefined : passwordToUse });
+  const newUser = mapUser(rows[0]);
+  logActivity({
+    action: 'INVITE_USER',
+    resource_type: 'user',
+    resource_id: newUser.id,
+    actor_id: req.user.id,
+    actor_name: req.user.name,
+    actor_role: req.user.role,
+    details: { email, role: parsed.data.role }
+  });
+  res.status(201).json({ user: newUser, tempPassword: parsed.data.password ? undefined : passwordToUse });
 });
 
 const resetSchema = z.object({
@@ -90,7 +111,16 @@ router.post('/:id/reset-password', requireAuth, requireSigner, async (req, res) 
     res.status(404).json({ error: 'not_found' });
     return;
   }
-  res.json({ user: mapUser(rows[0]) });
+  const updatedUser = mapUser(rows[0]);
+  logActivity({
+    action: 'RESET_PASSWORD',
+    resource_type: 'user',
+    resource_id: req.params.id,
+    actor_id: req.user.id,
+    actor_name: req.user.name,
+    actor_role: req.user.role
+  });
+  res.json({ user: updatedUser });
 });
 
 const patchSchema = z.object({ active: z.boolean() });
@@ -113,7 +143,17 @@ router.patch('/:id', requireAuth, requireSigner, async (req, res) => {
     res.status(404).json({ error: 'not_found' });
     return;
   }
-  res.json({ user: mapUser(rows[0]) });
+  const updatedUser = mapUser(rows[0]);
+  logActivity({
+    action: 'UPDATE_USER_STATUS',
+    resource_type: 'user',
+    resource_id: req.params.id,
+    actor_id: req.user.id,
+    actor_name: req.user.name,
+    actor_role: req.user.role,
+    details: { active: parsed.data.active }
+  });
+  res.json({ user: updatedUser });
 });
 
 export default router;

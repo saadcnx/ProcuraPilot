@@ -3,10 +3,11 @@ import { z } from 'zod';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { loadRules, saveRules } from '../db/repo';
 import { aiConfigFromRules, callAi } from '../lib/ai';
+import { logActivity } from '../lib/activityLogger';
 
 const router = Router();
 
-router.get('/test-key', requireAuth, requireSigner, async (_req, res) => {
+router.get('/test-key', requireAuth, requireSigner, async (req, res) => {
   const rules = await loadRules();
   const aiConfig = aiConfigFromRules(rules);
   if (!aiConfig) {
@@ -15,9 +16,25 @@ router.get('/test-key', requireAuth, requireSigner, async (_req, res) => {
   }
   try {
     await callAi(aiConfig, [{ type: 'text', text: 'Return valid JSON: {"ok":true}' }]);
+    logActivity({
+      action: 'TEST_AI_KEY',
+      resource_type: 'rules',
+      actor_id: req.user.id,
+      actor_name: req.user.name,
+      actor_role: req.user.role,
+      details: { success: true }
+    });
     res.json({ ok: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'ai_connection_failed';
+    logActivity({
+      action: 'TEST_AI_KEY',
+      resource_type: 'rules',
+      actor_id: req.user.id,
+      actor_name: req.user.name,
+      actor_role: req.user.role,
+      details: { success: false, error: msg }
+    });
     res.json({ ok: false, error: msg });
   }
 });
@@ -64,6 +81,19 @@ router.put('/', requireAuth, requireSigner, async (req, res) => {
   });
   const rules = await loadRules();
   const { apiKey, ...safe } = rules;
+  logActivity({
+    action: 'UPDATE_RULES',
+    resource_type: 'rules',
+    resource_id: '1',
+    actor_id: req.user.id,
+    actor_name: req.user.name,
+    actor_role: req.user.role,
+    details: { 
+      toleranceAmount: parsed.data.toleranceAmount, 
+      bankCheck: parsed.data.bankCheck, 
+      aiProvider: parsed.data.aiProvider 
+    }
+  });
   res.json({ rules: { ...safe, hasKey: Boolean(apiKey) } });
 });
 

@@ -1,9 +1,9 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { CheckIcon, DownloadIcon, LockIcon, SearchIcon } from 'lucide-react';
+import { CheckIcon, DownloadIcon, LockIcon, SearchIcon, ActivityIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { exportAuditCsv } from '../lib/api';
+import { exportAuditCsv, api } from '../lib/api';
 import { useAudit } from '../lib/queries';
 import { Button } from '../components/Button';
 import { Chip } from '../components/Chip';
@@ -27,11 +27,23 @@ const decisionLabel: Record<Decision, string> = {
 
 export function AuditVault() {
   const { data, isLoading, error } = useAudit();
+  const [tab, setTab] = useState<'checks' | 'system'>('checks');
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
   const [exporting, setExporting] = useState(false);
-
+  const [systemActivities, setSystemActivities] = useState<any[]>([]);
+  const [systemLoading, setSystemLoading] = useState(false);
   const entries = data?.entries ?? [];
+
+  useEffect(() => {
+    if (tab === 'system') {
+      setSystemLoading(true);
+      api.getSystemActivity()
+        .then(res => setSystemActivities(res.activities || []))
+        .catch(() => toast.error('Could not load system activity.'))
+        .finally(() => setSystemLoading(false));
+    }
+  }, [tab]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -79,6 +91,28 @@ export function AuditVault() {
       </header>
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
+        <div className="flex gap-2" role="tablist">
+          <button
+            role="tab"
+            aria-selected={tab === 'checks'}
+            onClick={() => setTab('checks')}
+            className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors ${
+              tab === 'checks' ? 'bg-secondary-container text-on-secondary-container' : 'border border-outline-variant text-ink-variant hover:bg-ink/[0.06]'
+            }`}
+          >
+            <LockIcon className="h-4 w-4" /> Check Audits
+          </button>
+          <button
+            role="tab"
+            aria-selected={tab === 'system'}
+            onClick={() => setTab('system')}
+            className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors ${
+              tab === 'system' ? 'bg-secondary-container text-on-secondary-container' : 'border border-outline-variant text-ink-variant hover:bg-ink/[0.06]'
+            }`}
+          >
+            <ActivityIcon className="h-4 w-4" /> System Activity
+          </button>
+        </div>
         <label className="flex h-12 w-full items-center gap-3 rounded-full bg-surface-container-high px-4 focus-within:ring-2 focus-within:ring-primary md:max-w-sm">
           <SearchIcon className="h-5 w-5 shrink-0 text-ink-variant" aria-hidden="true" />
           <span className="sr-only">Search audit entries</span>
@@ -113,7 +147,46 @@ export function AuditVault() {
       </div>
 
       <section className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest">
-        {error ? (
+        {tab === 'system' ? (
+          systemLoading ? (
+            <p className="px-6 py-16 text-center text-sm text-ink-variant">Loading system activity\u2026</p>
+          ) : systemActivities.length === 0 ? (
+            <p className="px-6 py-16 text-center text-sm text-ink-variant">No system activity recorded.</p>
+          ) : (
+            <table className="hidden w-full text-sm md:table">
+              <thead>
+                <tr className="border-b border-outline-variant text-left text-xs text-ink-variant">
+                  <th scope="col" className="py-3 pl-5 pr-3 font-medium">Time</th>
+                  <th scope="col" className="px-3 py-3 font-medium">Action</th>
+                  <th scope="col" className="px-3 py-3 font-medium">Resource</th>
+                  <th scope="col" className="px-3 py-3 font-medium">Actor</th>
+                  <th scope="col" className="py-3 pl-3 pr-5 font-medium">Details</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant/70">
+                {systemActivities.map((act: any) => (
+                  <tr key={act.id} className="align-top">
+                    <td className="whitespace-nowrap py-4 pl-5 pr-3 tabular-nums text-ink-variant">
+                      <p className="text-ink">{format(new Date(act.timestamp), 'MMM d, yyyy')}</p>
+                      <p className="text-xs">{format(new Date(act.timestamp), 'HH:mm:ss')}</p>
+                    </td>
+                    <td className="px-3 py-4 font-medium text-ink">{act.action.replace(/_/g, ' ')}</td>
+                    <td className="px-3 py-4 text-ink-variant">
+                      {act.resource_type ? `${act.resource_type} ${act.resource_id ? `#${act.resource_id}` : ''}` : '\u2014'}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-ink">
+                      {act.actor_name}
+                      <p className="text-xs text-ink-variant">{act.actor_role}</p>
+                    </td>
+                    <td className="max-w-sm py-4 pl-3 pr-5 text-xs text-ink-variant font-mono">
+                      {act.details ? JSON.stringify(act.details) : '\u2014'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+        ) : error ? (
           <p className="px-6 py-16 text-center text-sm text-ink-variant">
             Could not load the audit log. Refresh the page.
           </p>

@@ -91,8 +91,8 @@ export const api = {
     }),
 
   getRules: () => apiFetch<{ rules: DetectionRules }>('/api/rules'),
-
   testAiKey: () => apiFetch<{ ok: boolean; error?: string }>('/api/rules/test-key'),
+  getSystemActivity: () => apiFetch<{ activities: any[] }>('/api/audit/activity'),
 
   putRules: (rules: DetectionRules) =>
     apiFetch<{ rules: DetectionRules }>('/api/rules', {

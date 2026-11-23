@@ -5,6 +5,7 @@ import { pool } from '../db/pool';
 import { signToken } from '../lib/jwt';
 import { requireAuth } from '../middleware/auth';
 import { loginLimiter } from '../middleware/rateLimit';
+import { logActivity } from '../lib/activityLogger';
 
 const router = Router();
 
@@ -60,6 +61,13 @@ router.post('/login', loginLimiter, async (req, res) => {
     return;
   }
   const token = signToken({ sub: row.id, role: row.role, name: row.name });
+  logActivity({
+    action: 'LOGIN',
+    actor_id: row.id,
+    actor_name: row.name,
+    actor_role: row.role,
+    details: { ip: req.ip }
+  });
   res.json({ token, user: toTeamUser(row) });
 });
 
@@ -67,7 +75,15 @@ router.get('/me', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });
 
-router.post('/logout', (_req, res) => {
+router.post('/logout', (req, res) => {
+  if (req.user) {
+    logActivity({
+      action: 'LOGOUT',
+      actor_id: req.user.id,
+      actor_name: req.user.name,
+      actor_role: req.user.role
+    });
+  }
   res.json({ ok: true });
 });
 
