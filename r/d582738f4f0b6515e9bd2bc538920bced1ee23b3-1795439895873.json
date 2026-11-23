@@ -1,0 +1,56 @@
+{
+  "v": 2,
+  "id": "zc_mwtak24f_b7y6",
+  "sid": "s_mwtabaop_edgy",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795439895873,
+  "sha": "d582738f4f0b6515e9bd2bc538920bced1ee23b3",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 2 file(s) across 1 prompt turn(s)",
+  "msgHash": "d38c86ae05ee04ed",
+  "files": [
+    [
+      "server/src/lib/pdf.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/IntakePanel.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 2,
+    "add": 0,
+    "mod": 2,
+    "del": 0,
+    "src": {
+      "ai": 2
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5521,
+  "hash": "7eb4813b892b6808"
+}
