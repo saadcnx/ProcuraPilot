@@ -23,6 +23,7 @@ export const env = {
   DATABASE_URL: required('DATABASE_URL'),
   DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL ?? required('DATABASE_URL'),
   JWT_SECRET: requireJwtSecret(),
+  SECRET_BOX_KEY: process.env.SECRET_BOX_KEY ?? process.env.JWT_SECRET ?? '',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '8h',
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
   UPLOAD_DIR: process.env.UPLOAD_DIR ?? './uploads',

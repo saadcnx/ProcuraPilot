@@ -9,8 +9,8 @@ import { formatCurrency, formatSignedCurrency } from '../utils/currency';
 
 export function Inspection() {
   const { invoiceId } = useParams();
-  const { data, isLoading } = useCheck(invoiceId);
-  const { data: rulesData, isLoading: rulesLoading } = useRules();
+  const { data, isLoading, error: checkError } = useCheck(invoiceId);
+  const { data: rulesData, isLoading: rulesLoading, error: rulesError } = useRules();
   const rules = rulesData?.rules;
 
   const backLink = (
@@ -22,6 +22,17 @@ export function Inspection() {
       Queue
     </Link>
   );
+
+  if (checkError || rulesError) {
+    return (
+      <div className="mx-auto max-w-[1280px]">
+        {backLink}
+        <div className="py-16 text-center text-sm text-ink-variant">
+          Could not load invoice. Refresh the page.
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading || rulesLoading || !rules) {
     return (

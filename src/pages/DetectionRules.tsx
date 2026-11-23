@@ -24,7 +24,7 @@ interface RulesDraft {
 type DraftErrors = Partial<Record<keyof RulesDraft, string>>;
 
 export function DetectionRulesPage() {
-  const { data, isLoading } = useRules();
+  const { data, isLoading, error } = useRules();
   const saveMutation = useSaveRules();
   const { user } = useAuth();
   const canEdit = user?.role === 'boss';
@@ -38,6 +38,16 @@ export function DetectionRulesPage() {
     if (rules) setDraft(toDraft(rules));
   }, [rules]);
 
+  if (error) {
+    return (
+      <div className="mx-auto max-w-[960px]">
+        <header className="mb-6">
+          <h1 className="text-[28px] leading-9 text-ink">Detection rules</h1>
+          <p className="mt-1 text-sm text-ink-variant">Could not load rules. Refresh the page.</p>
+        </header>
+      </div>
+    );
+  }
   if (isLoading || !rules || !draft) {
     return (
       <div className="mx-auto max-w-[960px]">

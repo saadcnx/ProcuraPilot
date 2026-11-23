@@ -35,7 +35,7 @@ export function DecisionPanel({ invoice, result }: DecisionPanelProps) {
     try {
       await decideMutation.mutateAsync({ id: invoice.id, decision: 'rejected' });
       setConfirmReject(false);
-      toast.success(`Rejected. Dispute report sent to ${invoice.vendor}.`);
+      toast.success('Rejected. Recorded in the audit vault.');
       navigate('/queue');
     } catch (err) {
       if (err instanceof ApiError && err.code === 'signer_only') {
@@ -55,7 +55,7 @@ export function DecisionPanel({ invoice, result }: DecisionPanelProps) {
         reason: reason.trim()
       });
       toast.success(
-        `${formatCurrency(result.invoiceTotal)} released. Override recorded in the audit vault.`
+        `Approved with override. Recorded in the audit vault.`
       );
       navigate('/queue');
     } catch (err) {

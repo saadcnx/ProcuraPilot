@@ -3,6 +3,14 @@ import { DetectionRules, Invoice, LineItem } from '../engine/types';
 import { encryptSecret, decryptSecret } from '../lib/secretBox';
 import { randomUUID } from 'crypto';
 
+function safeDecrypt(value: string): string {
+  try {
+    return decryptSecret(value);
+  } catch {
+    return '';
+  }
+}
+
 interface CheckRow {
   id: string;
   vendor: string;
@@ -210,7 +218,7 @@ export async function loadRules(): Promise<DetectionRules> {
     bankCheck: r.bank_check,
     panicThreshold: Number(r.panic_threshold),
     panicEmail: r.panic_email,
-    apiKey: decryptSecret(r.api_key_encrypted),
+    apiKey: safeDecrypt(r.api_key_encrypted),
     aiProvider: r.ai_provider ?? 'openai',
     aiModel: r.ai_model ?? '',
     aiBaseUrl: r.ai_base_url ?? ''

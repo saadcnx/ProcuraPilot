@@ -1,12 +1,18 @@
 import { Pool } from 'pg';
 import { env } from '../env';
 
+const databaseUrl = env.DATABASE_URL;
+const sslRequired =
+  env.NODE_ENV === 'production' ||
+  /sslmode=require|ssl=true/i.test(databaseUrl) ||
+  /\.(supabase\.co|neon\.tech|rds\.amazonaws\.com|render\.com|railway\.app)/i.test(databaseUrl);
+
 export const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: databaseUrl,
   max: 10,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
-  ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
+  ssl: sslRequired ? { rejectUnauthorized: false } : undefined
 });
 
 pool.on('error', (err) => {

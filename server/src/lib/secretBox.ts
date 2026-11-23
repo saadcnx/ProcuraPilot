@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { env } from '../env';
 
-const key = crypto.createHash('sha256').update(env.JWT_SECRET).digest();
+const key = crypto.createHash('sha256').update(env.SECRET_BOX_KEY).digest();
 
 export function encryptSecret(plain: string): string {
   if (!plain) return '';

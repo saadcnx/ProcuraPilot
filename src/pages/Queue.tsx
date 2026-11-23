@@ -9,7 +9,7 @@ import { formatSignedCurrency } from '../utils/currency';
 import { issueSummary } from '../utils/issueSummary';
 
 export function Queue() {
-  const { data: rulesData } = useRules();
+  const { data: rulesData, error: rulesError } = useRules();
   const { data, isLoading, error } = useChecks('held');
   const rules = rulesData?.rules;
   const held = (data?.checks ?? [])
@@ -34,6 +34,11 @@ export function Queue() {
       {error && (
         <div className="mb-4 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container">
           Could not load the queue. {error instanceof Error ? error.message : 'Refresh the page.'}
+        </div>
+      )}
+      {rulesError && (
+        <div className="mb-4 rounded-xl bg-blush px-5 py-4 text-sm text-on-tertiary-container">
+          Detection rules failed to load. Frozen/Escalated badges may be missing.
         </div>
       )}
 

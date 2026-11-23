@@ -4,10 +4,10 @@ import { z } from 'zod';
 import { requireAuth, requireSigner } from '../middleware/auth';
 import { upload, readUploaded, deleteUploaded } from '../lib/upload';
 import { parsePdf, ParsedDoc, ParseError } from '../lib/pdf';
-import { aiConfigFromRules } from '../lib/ai';
+import { aiConfigFromRules, AiError } from '../lib/ai';
 import { compareInvoice } from '../engine/compare';
 import { Invoice } from '../engine/types';
-import { loadChecks, loadCheck, insertCheck, setCheckStatus, loadRules, logAiUsage } from '../db/repo';
+import { loadChecks, loadCheck, insertCheck, loadRules, logAiUsage, getVendorAccount, decideCheck } from '../db/repo';
 import { pool } from '../db/pool';
 
 const router = Router();
@@ -55,9 +55,10 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
         parsePdf(poBuf, 'po', aiConfig),
         parsePdf(invBuf, 'invoice', aiConfig)
       ]);
-      if (aiConfig) await logAiUsage(true).catch(() => {});
     } catch (err) {
-      if (aiConfig) await logAiUsage(false, err instanceof Error ? err.message : String(err)).catch(() => {});
+      if (err instanceof AiError) {
+        await logAiUsage(false, err.message).catch(() => {});
+      }
       if (err instanceof ParseError) {
         res.status(422).json({ error: err.code, message: err.message });
         return;
@@ -73,6 +74,7 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
     const subtotal = invParsed.lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
     const computedTax = Math.round(subtotal * invParsed.taxRate * 100) / 100;
     const chargedTax = invParsed.chargedTax ?? computedTax;
+    const bankOnFile = (await getVendorAccount(invParsed.vendor)) || invParsed.bankAccount;
     const invoice: Invoice = {
       id: `check-${randomUUID().slice(0, 8)}`,
       vendor: invParsed.vendor || poParsed.vendor,
@@ -84,7 +86,7 @@ router.post('/', requireAuth, upload.fields([{ name: 'po_file', maxCount: 1 }, {
       taxRate: invParsed.taxRate,
       invoiceTaxCharged: chargedTax,
       bankAccount: invParsed.bankAccount,
-      bankOnFile: invParsed.bankAccount,
+      bankOnFile,
       status: 'held',
       extractionUncertain: invParsed.confidence === 'low',
       department: 'Unassigned'
@@ -136,14 +138,19 @@ router.post('/:id/decide', requireAuth, requireSigner, async (req, res) => {
   const rules = await loadRules();
   const result = compareInvoice(invoice, rules);
   const newStatus = decision === 'rejected' ? 'rejected' : 'approved';
-  await setCheckStatus(invoice.id, newStatus);
-  await pool.query(
-    `INSERT INTO audit_log (id, check_id, invoice_number, vendor, variance, flag_count, decision, actor_id, actor_name, actor_role, reason)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-    [`audit-${randomUUID().slice(0, 8)}`, invoice.id, invoice.invoiceNumber, invoice.vendor, result.variance, result.flags.length, decision, req.user!.id, req.user!.name, req.user!.role, reason ?? null]
+  const decided = await decideCheck(
+    invoice.id,
+    decision,
+    reason,
+    { id: req.user!.id, name: req.user!.name, role: req.user!.role },
+    result.variance,
+    result.flags.length,
+    invoice.invoiceNumber,
+    invoice.vendor
   );
-  if (decision === 'force-approved') {
-    await pool.query('UPDATE users SET force_approvals = force_approvals + 1 WHERE id = $1', [req.user!.id]);
+  if (!decided) {
+    res.status(409).json({ error: 'already_decided' });
+    return;
   }
   res.json({ ok: true, invoice: { ...invoice, status: newStatus }, result });
 });
