@@ -1,0 +1,98 @@
+{
+  "v": 2,
+  "id": "zc_mwt5txyb_rv8d",
+  "sid": "s_mwt55mhb_xq9g",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795431958858,
+  "sha": "6d2f81b2e60ec7faa3fdea12513149c8ee3a1cff",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 8 file(s) across 1 prompt turn(s)",
+  "msgHash": "88abc0681a3e33ae",
+  "files": [
+    [
+      "server/src/db/repo.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/users.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "server/src/routes/checks.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/api.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/lib/queries.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/ManualEntryDialog.tsx",
+      "a",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/IntakePanel.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/DetectionRules.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 8,
+    "add": 1,
+    "mod": 7,
+    "del": 0,
+    "src": {
+      "ai": 8
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 1,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 8779,
+  "hash": "030722a5bc699822"
+}
