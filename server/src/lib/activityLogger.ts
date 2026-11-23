@@ -1,5 +1,4 @@
-import { exec } from 'child_process';
-import path from 'path';
+import { pool } from '../db/pool';
 
 export interface ActivityLog {
   action: string;
@@ -12,12 +11,21 @@ export interface ActivityLog {
 }
 
 export function logActivity(log: ActivityLog): void {
-  const payload = JSON.stringify(log).replace(/'/g, "'\\''");
-  const scriptPath = path.join(__dirname, '../../scripts/log_activity.py');
-  
-  exec(`python3 '${scriptPath}' '${payload}'`, { env: process.env }, (error) => {
-    if (error) {
-      console.error('[ActivityLogger] Python script failed:', error);
-    }
-  });
+  pool
+    .query(
+      `INSERT INTO system_activity (id, action, resource_type, resource_id, actor_id, actor_name, actor_role, details)
+       VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, $7)`,
+      [
+        log.action,
+        log.resource_type ?? null,
+        log.resource_id ?? null,
+        log.actor_id ?? null,
+        log.actor_name ?? '',
+        log.actor_role ?? '',
+        JSON.stringify(log.details ?? {})
+      ]
+    )
+    .catch((err) => {
+      console.error('[ActivityLogger] insert failed:', err);
+    });
 }
