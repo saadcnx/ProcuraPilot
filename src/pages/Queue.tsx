@@ -19,7 +19,7 @@ export function Queue() {
   return (
     <div className="mx-auto max-w-[1280px]">
       <header className="mb-6">
-        <h1 className="text-[28px] leading-9 text-ink">Held invoices</h1>
+        <h1 className="text-2xl leading-8 text-ink">Held invoices</h1>
         <p className="mt-1 text-sm text-ink-variant">
           {isLoading
             ? 'Loading queue\u2026'

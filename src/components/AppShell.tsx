@@ -31,7 +31,7 @@ export function AppShell() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-            `flex h-14 items-center gap-3 rounded-full pl-4 pr-6 text-sm font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+            `flex h-12 items-center gap-3 rounded-lg pl-4 pr-4 text-sm font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
             isActive ?
             'bg-primary-container text-on-primary-container' :
             'text-ink-variant hover:bg-ink/[0.06] hover:text-ink'}`

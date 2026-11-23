@@ -85,7 +85,7 @@ export function Inspection() {
       {backLink}
 
       <header className="mt-3">
-        <h1 className="text-[28px] leading-9 text-ink">{invoice.vendor}</h1>
+        <h1 className="text-2xl leading-8 text-ink">{invoice.vendor}</h1>
         <p className="mt-1 text-sm text-ink-variant">
           Invoice {invoice.invoiceNumber} · {invoice.poNumber} · <span className="font-medium text-primary">{invoice.department}</span> · Received{' '}
           {format(new Date(invoice.receivedAt), 'MMM d, yyyy, h:mm a')}

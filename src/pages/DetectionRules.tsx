@@ -92,7 +92,7 @@ export function DetectionRulesPage() {
   return (
     <div className="mx-auto max-w-[960px]">
       <header className="mb-6">
-        <h1 className="text-[28px] leading-9 text-ink">Detection rules</h1>
+        <h1 className="text-2xl leading-8 text-ink">Detection rules</h1>
         <p className="mt-1 text-sm text-ink-variant">
           How much the matcher forgives, and when it raises the alarm.
           {!canEdit && ' Only approvers can change these.'}

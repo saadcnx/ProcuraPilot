@@ -62,7 +62,7 @@ export function AuditVault() {
     <div className="mx-auto max-w-[1280px]">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-[28px] leading-9 text-ink">Audit vault</h1>
+          <h1 className="text-2xl leading-8 text-ink">Audit vault</h1>
           <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-variant">
             <LockIcon className="h-3.5 w-3.5" aria-hidden="true" />
             Append-only. Entries can't be edited or deleted by anyone.

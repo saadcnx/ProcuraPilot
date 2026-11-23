@@ -49,7 +49,7 @@ export function Login() {
       <section className="hidden flex-col justify-between bg-blush p-12 lg:flex">
         <BrandMark />
         <div className="max-w-lg">
-          <h1 className="text-[45px] leading-[52px] text-ink">
+          <h1 className="text-4xl leading-tight text-ink">
             Every bill checked against its order. Every override signed.
           </h1>
           <p className="mt-6 max-w-md text-base leading-6 text-ink-variant">
@@ -69,7 +69,7 @@ export function Login() {
           <div className="mb-10 lg:hidden">
             <BrandMark />
           </div>
-          <h2 className="text-[28px] leading-9 text-ink">Sign in</h2>
+          <h2 className="text-2xl leading-8 text-ink">Sign in</h2>
           <p className="mt-2 text-sm text-ink-variant">Everything you do here is recorded under your name.</p>
 
           <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">

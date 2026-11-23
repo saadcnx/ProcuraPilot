@@ -57,7 +57,7 @@ export function People() {
     <div className="mx-auto max-w-[1280px]">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-[28px] leading-9 text-ink">People & authority</h1>
+          <h1 className="text-2xl leading-8 text-ink">People & authority</h1>
           <p className="mt-1 text-sm text-ink-variant">
             Who can release money, and how often they've overridden the matcher.
           </p>

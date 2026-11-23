@@ -38,7 +38,7 @@ export function Dialog({ open, onClose, title, description, children, actions }:
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
-          className="relative w-full max-w-md rounded-[28px] bg-surface-container-high p-6 shadow-e3"
+          className="relative w-full max-w-md rounded-2xl bg-surface-container-high p-6 shadow-e3"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.96 }}
