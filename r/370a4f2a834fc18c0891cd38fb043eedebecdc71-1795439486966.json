@@ -1,0 +1,56 @@
+{
+  "v": 2,
+  "id": "zc_mwtabaqh_kbm2",
+  "sid": "s_mwtabaop_edgy",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795439486966,
+  "sha": "370a4f2a834fc18c0891cd38fb043eedebecdc71",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 2 file(s) across 1 prompt turn(s)",
+  "msgHash": "d38c86ae05ee04ed",
+  "files": [
+    [
+      "src/components/BrandMark.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "index.html",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 2,
+    "add": 0,
+    "mod": 2,
+    "del": 0,
+    "src": {
+      "ai": 2
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5460,
+  "hash": "e0c016d8bbce4933"
+}
