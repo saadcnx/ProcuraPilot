@@ -1,0 +1,49 @@
+{
+  "v": 2,
+  "id": "zc_mwte8936_18gp",
+  "sid": "s_mwte892z_iwrd",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795446063550,
+  "sha": "c07b63e9a57de0e8fea3fb8075c71108f334d90b",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 1 file(s) across 1 prompt turn(s)",
+  "msgHash": "bae5e83705ee04ed",
+  "files": [
+    [
+      "server/Dockerfile",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "ai": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5640,
+  "hash": "41ce066b7e7be708"
+}
