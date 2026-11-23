@@ -1,0 +1,70 @@
+{
+  "v": 2,
+  "id": "zc_mwt5yrdq_sdmw",
+  "sid": "s_mwt55mhb_xq9g",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795432183549,
+  "sha": "fa4ca9c3795ed25b95e594bf6a1e13cf993cd263",
+  "branch": "main",
+  "delivery": "direct",
+  "msgSubj": "feat(sync): Synchronized 4 file(s) across 1 prompt turn(s)",
+  "msgHash": "42511f1c05ee04ed",
+  "files": [
+    [
+      "src/data/flagMeta.ts",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/ComparisonTable.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/components/DecisionPanel.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ],
+    [
+      "src/pages/Inspection.tsx",
+      "m",
+      "ai",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 4,
+    "add": 0,
+    "mod": 4,
+    "del": 0,
+    "src": {
+      "ai": 4
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 1,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 7431,
+  "hash": "e636b575d776bdd3"
+}
