@@ -54,7 +54,8 @@ export function IntakePanel() {
         } else if (err.code === 'api_key_required_for_scanned_pdf') {
           toast.error('Scanned PDF requires an AI key. Configure it in Rules, or use Manual Entry.');
         } else if (err.code === 'vision_extraction_failed') {
-          toast.error('AI could not read this PDF. Try a clearer scan or use Manual Entry.');
+          const detail = err.body?.message as string | undefined;
+          toast.error(`AI could not read this PDF${detail ? ` (${detail})` : ''}. Try a clearer scan or use Manual Entry.`);
         } else if (err.code === 'vision_dependency_missing') {
           toast.error('Server is missing the vision dependency. Run npm install in server/.');
         } else if (err.code === 'pdf_too_large') {

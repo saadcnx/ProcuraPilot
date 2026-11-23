@@ -87,7 +87,7 @@ export async function parsePdf(
   const textDoc = parseDocumentText(text, kind);
   const textHasLines = textDoc.lines.length > 0;
 
-  if (!looksScanned(text) && textHasLines) {
+  if (!looksScanned(text)) {
     if (hasConfig && aiConfig) {
       try {
         const apiDoc = await parseWithApi(text, kind, aiConfig);
@@ -96,7 +96,7 @@ export async function parsePdf(
         console.error('[pdf] API text parse failed, using regex:', apiError);
       }
     }
-    return textDoc;
+    if (textHasLines) return textDoc;
   }
 
   if (!hasConfig || !aiConfig) {
