@@ -31,7 +31,8 @@ router.get('/', requireAuth, async (_req, res) => {
 const inviteSchema = z.object({
   name: z.string().min(1).max(120),
   email: z.string().email().max(320),
-  role: z.enum(['inspector', 'boss'])
+  role: z.enum(['inspector', 'boss']),
+  password: z.string().min(8).max(100).optional()
 });
 
 router.post('/', requireAuth, requireSigner, async (req, res) => {
@@ -46,9 +47,9 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
     res.status(409).json({ error: 'email_in_use' });
     return;
   }
-  // One-time temporary password; admin must share it out-of-band.
-  const tempPassword = randomBytes(24).toString('base64url');
-  const passwordHash = await bcrypt.hash(tempPassword, env.BCRYPT_ROUNDS);
+  // Admin can provide a custom password, or we generate a secure fallback.
+  const passwordToUse = parsed.data.password || randomBytes(24).toString('base64url');
+  const passwordHash = await bcrypt.hash(passwordToUse, env.BCRYPT_ROUNDS);
   const id = `u-${randomUUID().slice(0, 8)}`;
   const { rows } = await pool.query<UserRow>(
     `INSERT INTO users (id, name, email, password_hash, role, active, force_approvals)
@@ -56,12 +57,20 @@ router.post('/', requireAuth, requireSigner, async (req, res) => {
      RETURNING id, name, email, role, active, force_approvals`,
     [id, parsed.data.name.trim(), email, passwordHash, parsed.data.role]
   );
-  res.status(201).json({ user: mapUser(rows[0]), tempPassword });
+  res.status(201).json({ user: mapUser(rows[0]), tempPassword: parsed.data.password ? undefined : passwordToUse });
+});
+
+const resetSchema = z.object({
+  password: z.string().min(8).max(100)
 });
 
 router.post('/:id/reset-password', requireAuth, requireSigner, async (req, res) => {
-  const tempPassword = randomBytes(24).toString('base64url');
-  const passwordHash = await bcrypt.hash(tempPassword, env.BCRYPT_ROUNDS);
+  const parsed = resetSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'invalid_body' });
+    return;
+  }
+  const passwordHash = await bcrypt.hash(parsed.data.password, env.BCRYPT_ROUNDS);
   const { rows } = await pool.query<UserRow>(
     `UPDATE users SET password_hash = $2 WHERE id = $1 RETURNING id, name, email, role, active, force_approvals`,
     [req.params.id, passwordHash]
@@ -70,7 +79,7 @@ router.post('/:id/reset-password', requireAuth, requireSigner, async (req, res) 
     res.status(404).json({ error: 'not_found' });
     return;
   }
-  res.json({ user: mapUser(rows[0]), tempPassword });
+  res.json({ user: mapUser(rows[0]) });
 });
 
 const patchSchema = z.object({ active: z.boolean() });

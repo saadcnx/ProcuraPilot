@@ -79,7 +79,7 @@ export function usePatchUser() {
 export function useResetUserPassword() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => api.resetUserPassword(id),
+    mutationFn: ({ id, password }: { id: string; password: string }) => api.resetUserPassword(id, password),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] })
   });
 }

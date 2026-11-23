@@ -76,21 +76,16 @@ export const api = {
 
   getUsers: () => apiFetch<{ users: TeamUser[] }>('/api/users'),
 
-  inviteUser: (input: { name: string; email: string; role: 'inspector' | 'boss' }) =>
-    apiFetch<{ user: TeamUser; tempPassword: string }>('/api/users', {
+  inviteUser: (input: { name: string; email: string; role: 'inspector' | 'boss'; password?: string }) =>
+    apiFetch<{ user: TeamUser; tempPassword?: string }>('/api/users', {
       method: 'POST',
       body: JSON.stringify(input)
     }),
 
-  patchUser: (id: string, active: boolean) =>
-    apiFetch<{ user: TeamUser }>(`/api/users/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ active })
-    }),
-
-  resetUserPassword: (id: string) =>
-    apiFetch<{ user: TeamUser; tempPassword: string }>(`/api/users/${id}/reset-password`, {
-      method: 'POST'
+  resetUserPassword: (id: string, password: string) =>
+    apiFetch<{ user: TeamUser }>(`/api/users/${id}/reset-password`, {
+      method: 'POST',
+      body: JSON.stringify({ password })
     }),
 
   getRules: () => apiFetch<{ rules: DetectionRules }>('/api/rules'),

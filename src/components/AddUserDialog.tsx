@@ -27,6 +27,7 @@ export function AddUserDialog({ open, onClose }: AddUserDialogProps) {
   const inviteMutation = useInviteUser();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('inspector');
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [created, setCreated] = useState<CreatedUser | null>(null);
@@ -36,6 +37,7 @@ export function AddUserDialog({ open, onClose }: AddUserDialogProps) {
     if (open) {
       setName('');
       setEmail('');
+      setPassword('');
       setRole('inspector');
       setErrors({});
       setCreated(null);
@@ -53,9 +55,19 @@ export function AddUserDialog({ open, onClose }: AddUserDialogProps) {
       return;
     }
     try {
-      const res = await inviteMutation.mutateAsync({ name: name.trim(), email: email.trim(), role });
-      setCreated({ name: res.user.name, email: res.user.email, tempPassword: res.tempPassword });
-      toast.success(`${res.user.name} added. Share the temporary password below.`);
+      const res = await inviteMutation.mutateAsync({ 
+        name: name.trim(), 
+        email: email.trim(), 
+        role, 
+        password: password.trim() || undefined 
+      });
+      if (res.tempPassword) {
+        setCreated({ name: res.user.name, email: res.user.email, tempPassword: res.tempPassword });
+        toast.success(`${res.user.name} added. Share the temporary password below.`);
+      } else {
+        toast.success(`${res.user.name} added with the custom password.`);
+        onClose();
+      }
     } catch (err) {
       if (err instanceof ApiError && err.code === 'email_in_use') {
         setErrors({ email: 'Someone already uses that email.' });
@@ -135,6 +147,14 @@ export function AddUserDialog({ open, onClose }: AddUserDialogProps) {
             onChange={setEmail}
             error={errors.email}
             labelBg="bg-surface-container-high"
+          />
+          <TextField
+            label="Password (optional)"
+            type="text"
+            value={password}
+            onChange={setPassword}
+            labelBg="bg-surface-container-high"
+            helper="Leave blank to auto-generate a random one."
           />
           <fieldset>
             <legend className="text-sm font-medium text-ink">Authority</legend>

@@ -19,7 +19,7 @@ export function People() {
   const [adding, setAdding] = useState(false);
   const [revoking, setRevoking] = useState<TeamUser | null>(null);
   const [resetting, setResetting] = useState<TeamUser | null>(null);
-  const [resetResult, setResetResult] = useState<{ email: string; password: string } | null>(null);
+  const [newPassword, setNewPassword] = useState('');
   const canManage = currentUser?.role === 'boss';
   const users = data?.users ?? [];
 
@@ -58,10 +58,16 @@ export function People() {
 
   const confirmReset = () => {
     if (!resetting) return;
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters.');
+      return;
+    }
     const target = resetting;
-    resetMutation.mutate(target.id, {
-      onSuccess: (data) => {
-        setResetResult({ email: target.email, password: data.tempPassword });
+    resetMutation.mutate({ id: target.id, password: newPassword }, {
+      onSuccess: () => {
+        toast.success(`Password updated for ${target.name}.`);
+        setResetting(null);
+        setNewPassword('');
       },
       onError: () => toast.error('Could not reset password.'),
     });
@@ -228,42 +234,25 @@ export function People() {
         open={resetting !== null}
         onClose={() => {
           setResetting(null);
-          setResetResult(null);
+          setNewPassword('');
         }}
-        title={resetResult ? 'Password reset' : 'Reset password?'}
-        description={
-          resetResult ? (
-            <p>Share this temporary password with {resetResult.email}. It will not be shown again.</p>
-          ) : (
-            <p>This will generate a new temporary password for {resetting?.name}. Their current password will stop working immediately.</p>
-          )
-        }
+        title="Reset password"
+        description={<p>Enter a new password for {resetting?.name}. Their current password will stop working immediately.</p>}
         actions={
-          resetResult ? (
-            <Button onClick={() => { setResetting(null); setResetResult(null); }}>Done</Button>
-          ) : (
-            <>
-              <Button variant="text" onClick={() => setResetting(null)}>Cancel</Button>
-              <Button loading={resetMutation.isPending} onClick={confirmReset}>Reset password</Button>
-            </>
-          )
+          <>
+            <Button variant="text" onClick={() => { setResetting(null); setNewPassword(''); }}>Cancel</Button>
+            <Button loading={resetMutation.isPending} onClick={confirmReset}>Save password</Button>
+          </>
         }
       >
-        {resetResult && (
-          <div className="space-y-4">
-            <div>
-              <p className="mb-1 text-xs text-ink-variant">Temporary password</p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 break-all rounded bg-surface-container px-3 py-2 font-mono text-sm text-ink">
-                  {resetResult.password}
-                </code>
-                <Button variant="outlined" onClick={() => { navigator.clipboard.writeText(resetResult.password); toast.success('Copied'); }}>
-                  Copy
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        <TextField
+          label="New password"
+          type="text"
+          value={newPassword}
+          onChange={setNewPassword}
+          labelBg="bg-surface-container-high"
+          helper="At least 8 characters. You will need to share this with the user."
+        />
       </Dialog>
     </div>
   );
