@@ -1,0 +1,59 @@
+{
+  "v": 2,
+  "id": "zc_mwur3lch_nvf6",
+  "sid": "s_mwur3lc2_xk8c",
+  "repo": "saadcnx/procurapilot",
+  "ts": 1795528147255,
+  "sha": "1332ee5bfb719d7e5042eb9662a241939f35495d",
+  "branch": "main",
+  "delivery": "restore",
+  "msgSubj": "Zerocommit.dev — Restore to 4161e99",
+  "msgHash": "ad7b584d5c9f3b94",
+  "files": [
+    [
+      "src/pages/Queue.tsx",
+      "m",
+      "man",
+      1,
+      0
+    ]
+  ],
+  "sum": {
+    "files": 1,
+    "add": 0,
+    "mod": 1,
+    "del": 0,
+    "src": {
+      "man": 1
+    }
+  },
+  "warn": {
+    "quarantine": 0,
+    "halluc": 0,
+    "secret": 0,
+    "runtime": 0,
+    "override": false
+  },
+  "safety": {
+    "canary": "8/8",
+    "vault": "persistent"
+  },
+  "base": {
+    "gen": 0,
+    "anc": "T",
+    "race": 0
+  },
+  "verify": 1,
+  "ms": 5409,
+  "restore": {
+    "rid": "rst_mwur3l7r_5pk9",
+    "fromSha": "4b01b8bef0450c170d59b802c075d60e9d9512c5",
+    "fromTree": "7754d8b528db9f895efe17358ba4fa82094b5396",
+    "toSha": "4161e99bae448b63baec5bbf36604499de8fd7ee",
+    "toTree": "6a6a4bb1baf51b89212a1df12cf2055213326a84",
+    "backup": "backup/main-20261124-134859-4b01b8b",
+    "isUndo": false,
+    "undoesId": ""
+  },
+  "hash": "b41f3f1569cd6cc7"
+}
