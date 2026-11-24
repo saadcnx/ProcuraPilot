@@ -1,0 +1,15 @@
+{
+  "sid": "s_mwulyyo6_ebi5",
+  "startedAt": 1795519533320,
+  "client": {
+    "os": "Windows",
+    "browser": "Chrome",
+    "locale": "en-US",
+    "tz": "Asia/Karachi"
+  },
+  "fp": "0451ecdc62f0bb3e",
+  "tier": "pro",
+  "auth": "oauth",
+  "appVer": "1.0.78",
+  "aegisVer": "5.4.9"
+}
