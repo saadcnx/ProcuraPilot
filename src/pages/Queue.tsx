@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ChevronRightIcon, InboxIcon, LockIcon, SearchIcon, SirenIcon } from 'lucide-react';
+import { ChevronRightIcon, InboxIcon, LockIcon, SirenIcon } from 'lucide-react';
 import { useChecks, useRules } from '../lib/queries';
 import { Chip } from '../components/Chip';
 import { IntakePanel } from '../components/IntakePanel';
-import { formatCurrency, formatSignedCurrency } from '../utils/currency';
+import { formatSignedCurrency } from '../utils/currency';
 import { issueSummary } from '../utils/issueSummary';
 
 export function Queue() {
@@ -15,40 +15,6 @@ export function Queue() {
   const held = (data?.checks ?? [])
     .slice()
     .sort((a, b) => Math.abs(b.result.variance) - Math.abs(a.result.variance));
-
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'frozen' | 'escalated'>('all');
-  const [departmentFilter, setDepartmentFilter] = useState<string | null>(null);
-
-  const departments = useMemo(() => {
-    const set = new Set(held.map(({ invoice }) => invoice.department).filter(Boolean));
-    return Array.from(set).sort();
-  }, [held]);
-
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return held.filter(({ invoice, result }) => {
-      if (statusFilter === 'frozen' && !(rules?.bankCheck && result.bankMismatch)) return false;
-      if (statusFilter === 'escalated' && !(rules && Math.abs(result.variance) >= rules.panicThreshold)) return false;
-      if (departmentFilter && invoice.department !== departmentFilter) return false;
-      if (!query) return true;
-      return [invoice.vendor, invoice.invoiceNumber, invoice.poNumber, invoice.department]
-        .some((value) => value.toLowerCase().includes(query));
-    });
-  }, [held, rules, search, statusFilter, departmentFilter]);
-
-  const totalExposure = useMemo(
-    () => held.reduce((sum, { result }) => sum + Math.abs(result.variance), 0),
-    [held]
-  );
-  const frozenCount = useMemo(
-    () => (rules ? held.filter(({ result }) => rules.bankCheck && result.bankMismatch).length : 0),
-    [held, rules]
-  );
-  const escalatedCount = useMemo(
-    () => (rules ? held.filter(({ result }) => Math.abs(result.variance) >= rules.panicThreshold).length : 0),
-    [held, rules]
-  );
 
   return (
     <div className="mx-auto max-w-[1280px]">
@@ -76,64 +42,6 @@ export function Queue() {
         </div>
       )}
 
-      <section aria-label="Exposure summary" className="mb-6 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4">
-          <p className="text-xs font-medium text-ink-variant">Total exposure at risk</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">{formatCurrency(totalExposure)}</p>
-        </div>
-        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4">
-          <p className="text-xs font-medium text-ink-variant">Frozen bills</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">{frozenCount}</p>
-        </div>
-        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4">
-          <p className="text-xs font-medium text-ink-variant">Escalated bills</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">{escalatedCount}</p>
-        </div>
-      </section>
-
-      <section aria-label="Queue filters" className="mb-4 space-y-3">
-        <label className="relative block">
-          <span className="sr-only">Search held invoices</span>
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-variant" aria-hidden="true" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search vendor, invoice, PO, department"
-            className="h-10 w-full rounded-lg border border-outline-variant bg-surface-container-lowest pl-9 pr-3 text-sm text-ink placeholder:text-ink-variant focus:border-primary focus:outline-none"
-          />
-        </label>
-        <div className="flex flex-wrap items-center gap-2">
-          {(['all', 'frozen', 'escalated'] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setStatusFilter(value)}
-              className={`h-8 rounded-md px-3 text-xs font-medium capitalize transition-colors duration-150 ease-out ${
-                statusFilter === value
-                  ? 'bg-primary-container text-on-primary-container'
-                  : 'bg-surface-container-high text-ink-variant hover:bg-ink/[0.04]'
-              }`}
-            >
-              {value}
-            </button>
-          ))}
-          {departments.map((department) => (
-            <button
-              key={department}
-              type="button"
-              onClick={() => setDepartmentFilter(departmentFilter === department ? null : department)}
-              className={`h-8 rounded-md px-3 text-xs font-medium transition-colors duration-150 ease-out ${
-                departmentFilter === department
-                  ? 'bg-primary-container text-on-primary-container'
-                  : 'bg-surface-container-high text-ink-variant hover:bg-ink/[0.04]'
-              }`}
-            >
-              {department}
-            </button>
-          ))}
-        </div>
-      </section>
-
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
         <section
           aria-label="Held invoices"
@@ -159,13 +67,9 @@ export function Queue() {
                 Every bill received so far has matched its order or been decided.
               </p>
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="px-6 py-16 text-center text-sm text-ink-variant">
-              No held invoices match these filters.
-            </div>
           ) : (
             <ul className="divide-y divide-outline-variant">
-              {filtered.map(({ invoice, result }) => {
+              {held.map(({ invoice, result }) => {
                 const frozen = rules ? rules.bankCheck && result.bankMismatch : false;
                 const escalated = rules
                   ? Math.abs(result.variance) >= rules.panicThreshold
